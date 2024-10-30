@@ -33,8 +33,7 @@ def get_total_pages():
     last_page_url = pagination['href']
     total_pages = int(last_page_url.split('/')[-1])
     
-    return 1
-    # return total_pages
+    return total_pages
 
 def get_question_links(page_number):
     url = f"{QUESTION_PAGES_URL}/page/{page_number}"
