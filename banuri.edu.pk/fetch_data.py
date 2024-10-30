@@ -4,7 +4,7 @@ import csv
 import os
 import time
 
-BASE_URL = "https://www.banuri.edu.pk/new-questions"
+QUESTION_PAGES_URL = "https://www.banuri.edu.pk/new-questions"
 QUESTION_URL = "https://www.banuri.edu.pk/readquestion"
 DATA_DIR = "./data"
 
@@ -12,15 +12,16 @@ DATA_DIR = "./data"
 os.makedirs(DATA_DIR, exist_ok=True)
 
 def get_total_pages():
-    url = "https://www.banuri.edu.pk/readfatawa"
-    response = requests.get(url)
+    response = requests.get(QUESTION_PAGES_URL)
     soup = BeautifulSoup(response.text, 'html.parser')
     
-    pagination = soup.select_one('a.last')  # Ensure this CSS selector matches the actual element on the page
+    pagination = soup.select_one(
+        'body > section.inner-section > div > div > div.col-md-9.col-md-push-3.listing-bok > div:nth-child(3) > nav > ul > li:last-child a'
+    )
 
     if pagination is None:
         print("Pagination element not found. Please check the selector or the page structure.")
-        return 1  # Default to 1 if pagination is missing, or handle as appropriate
+        return 1242  # Default to 1 if pagination is missing, or handle as appropriate
 
     last_page_url = pagination['href']
     total_pages = int(last_page_url.split('/')[-1])
@@ -29,7 +30,7 @@ def get_total_pages():
     # return total_pages
 
 def get_question_links(page_number):
-    url = f"{BASE_URL}/page/{page_number}"
+    url = f"{QUESTION_PAGES_URL}/page/{page_number}"
     response = requests.get(url)
     soup = BeautifulSoup(response.text, 'html.parser')
     question_links = soup.select(
@@ -57,6 +58,10 @@ def get_question_details(question_url):
     # Extract "question"
     question_tag = soup.select_one(
         'body > section.inner-section > div > div > div.col-md-9.col-md-push-3.listing-bok > div > div.col-md-12.sawal-jawab > p:nth-child(3)'
+    ) or soup.select_one(
+        'body > section.inner-section > div > div > div.col-md-9.col-md-push-3.listing-bok > div > div.col-md-12.sawal-jawab > p:nth-child(2)'
+    ) or soup.select_one(
+        '.sawal-jawab > p:nth-child(2)'
     )
     question_text = question_tag.get_text(strip=True) if question_tag else "Question not found"
 
