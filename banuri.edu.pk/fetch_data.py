@@ -8,6 +8,13 @@ QUESTION_PAGES_URL = "https://www.banuri.edu.pk/new-questions"
 QUESTION_URL = "https://www.banuri.edu.pk/readquestion"
 DATA_DIR = "./data"
 
+headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.63 Safari/537.36",
+    "Accept-Language": "en-US,en;q=0.9",
+    "Accept-Encoding": "gzip, deflate, br",
+    "Connection": "keep-alive"
+}
+
 # Create data directory if it doesn't exist
 os.makedirs(DATA_DIR, exist_ok=True)
 
@@ -21,7 +28,7 @@ def get_total_pages():
 
     if pagination is None:
         print("Pagination element not found. Please check the selector or the page structure.")
-        return 1242  # Default to 1 if pagination is missing, or handle as appropriate
+        exit()
 
     last_page_url = pagination['href']
     total_pages = int(last_page_url.split('/')[-1])
