@@ -12,11 +12,16 @@ DATA_DIR = "./data"
 os.makedirs(DATA_DIR, exist_ok=True)
 
 def get_total_pages():
-    response = requests.get(BASE_URL)
+    url = "https://www.banuri.edu.pk/readfatawa"
+    response = requests.get(url)
     soup = BeautifulSoup(response.text, 'html.parser')
-    pagination = soup.select_one(
-        'body > section.inner-section > div > div > div.col-md-9.col-md-push-3.listing-bok > div:nth-child(3) > nav > ul > li:last-child a'
-    )
+    
+    pagination = soup.select_one('a.last')  # Ensure this CSS selector matches the actual element on the page
+
+    if pagination is None:
+        print("Pagination element not found. Please check the selector or the page structure.")
+        return 1  # Default to 1 if pagination is missing, or handle as appropriate
+
     last_page_url = pagination['href']
     total_pages = int(last_page_url.split('/')[-1])
     
@@ -33,48 +38,64 @@ def get_question_links(page_number):
     return [link['href'] for link in question_links]
 
 def get_question_details(question_url):
+    # Send a request to the question page
     response = requests.get(question_url)
-    soup = BeautifulSoup(response.text, 'html.parser')
+    response.raise_for_status()
     
-    # Extract required details
+    # Parse the HTML content
+    soup = BeautifulSoup(response.content, 'html.parser')
+
+    # Extract "issued_at" from the URL
     issued_at = question_url.split('/')[-1]
-    title = soup.select_one(
+
+    # Extract "title"
+    title_tag = soup.select_one(
         'body > section.inner-section > div > div > div.col-md-9.col-md-push-3.listing-bok > div > div:nth-child(2) > h3'
-    ).get_text(strip=True)
-    
-    # Question text
-    question_text = soup.select_one(
-        'body > section.inner-section > div > div > div.col-md-9.col-md-push-3.listing-bok > div > div.col-md-12.sawal-jawab > p:nth-child(3)'
-    ).get_text(strip=True)
-
-    # Answer text (all paragraphs between answer heading and <hr>)
-    answer_elements = soup.select(
-        'body > section.inner-section > div > div > div.col-md-9.col-md-push-3.listing-bok > div > div.col-md-12.sawal-jawab > h4.question_heading + p, h4.question_heading + p ~ p'
     )
-    answer_text = " ".join([p.get_text(strip=True) for p in answer_elements])
+    title = title_tag.get_text(strip=True) if title_tag else "Title not found"
 
-    # Fatwa number
-    fatwa_number = soup.select_one("#fatwa_number").get_text(strip=True)
+    # Extract "question"
+    question_tag = soup.select_one(
+        'body > section.inner-section > div > div > div.col-md-9.col-md-push-3.listing-bok > div > div.col-md-12.sawal-jawab > p:nth-child(3)'
+    )
+    question_text = question_tag.get_text(strip=True) if question_tag else "Question not found"
 
+    # Extract "answer"
+    answer_html = ""
+    answer_start = soup.find('h4', class_='question_heading', string='جواب')
+    if answer_start:
+        for sibling in answer_start.find_next_siblings():
+            if sibling.name == "hr" and 'big-hr' in sibling.get("class", []):
+                break
+            answer_html += str(sibling)
+    
+    # Extract "fatwa_number"
+    fatwa_number_tag = soup.select_one('#fatwa_number')
+    fatwa_number = fatwa_number_tag.get_text(strip=True) if fatwa_number_tag else "Fatwa number not found"
+
+    # Set "dar_ul_ifta" to "banuri"
     dar_ul_ifta = "banuri"
-    
-    # Extract kitab, bab, and fasal tags after the second big-hr
-    tags = soup.select("hr.big-hr ~ .tag a")
+
+    # Extract "kitab", "bab", and "fasal"
     kitab, bab, fasal = None, None, None
+    tags = soup.find_all('div', class_='tag')
     for tag in tags:
-        href = tag['href']
-        if "/questions/kitab" in href:
-            kitab = {'title': tag.get_text(strip=True), 'id': href.split('/')[-1]}
-        elif "/questions/bab" in href:
-            bab = {'title': tag.get_text(strip=True), 'id': href.split('/')[-1]}
-        elif "/questions/fasal" in href:
-            fasal = {'title': tag.get_text(strip=True), 'id': href.split('/')[-1]}
-    
+        link = tag.find('a')
+        if link:
+            href = link.get("href", "")
+            if "/questions/kitab" in href:
+                kitab = (link.get_text(strip=True), href.split("/")[-1])
+            elif "/questions/bab" in href:
+                bab = (link.get_text(strip=True), href.split("/")[-1])
+            elif "/questions/fasal" in href:
+                fasal = (link.get_text(strip=True), href.split("/")[-1])
+
+    # Compile question details
     return {
         "issued_at": issued_at,
         "title": title,
         "question": question_text,
-        "answer": answer_text,
+        "answer": answer_html,
         "fatwa_number": fatwa_number,
         "dar_ul_ifta": dar_ul_ifta,
         "kitab": kitab,
