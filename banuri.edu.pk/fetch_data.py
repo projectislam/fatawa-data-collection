@@ -141,7 +141,7 @@ def main():
             print(f"  Scraping question at {question_url}")
             question_details = get_question_details(question_url)
             questions_data.append(question_details)
-            time.sleep(1)  # Pause to avoid rate limiting
+            # time.sleep(1)  # Pause to avoid rate limiting
         
         save_to_csv(page, questions_data)
         print(f"Saved page {page} data to {DATA_DIR}/{page}.csv")
