@@ -104,6 +104,7 @@ def get_question_details(question_url):
     # Compile question details
     return {
         "issued_at": issued_at,
+        "link": question_url,
         "title": title,
         "question": question_text,
         "answer": answer_html,
@@ -118,7 +119,7 @@ def save_to_csv(page_number, questions_data):
     filename = f"{DATA_DIR}/{page_number}.csv"
     with open(filename, mode='w', newline='', encoding='utf-8') as csv_file:
         fieldnames = [
-            "issued_at", "title", "question", "answer", "fatwa_number",
+            "issued_at", "link", "title", "question", "answer", "fatwa_number",
             "dar_ul_ifta", "kitab", "bab", "fasal"
         ]
         writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
