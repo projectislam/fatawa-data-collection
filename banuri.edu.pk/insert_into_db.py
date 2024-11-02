@@ -26,19 +26,44 @@ cursor.execute('''
 ''', ("banuri", "Banuri Town", "path/to/logo.png", "https://banuri.edu.pk"))
 dar_ul_ifta_id = cursor.lastrowid  # Get the ID of the inserted row
 
-# Create "kitab", "bab", and "fasal" tables with unique en_id constraint
-for table_name in ["kitab", "bab", "fasal"]:
-    cursor.execute(f'''
-        CREATE TABLE IF NOT EXISTS {table_name} (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            en_id TEXT UNIQUE,
-            urdu TEXT,
-            dar_ul_ifta INTEGER,
-            FOREIGN KEY (dar_ul_ifta) REFERENCES dar_ul_ifta(id)
-        )
-    ''')
+# Create "kitab" table (top-level category)
+cursor.execute('''
+    CREATE TABLE IF NOT EXISTS kitab (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        en_id TEXT UNIQUE,
+        urdu TEXT,
+        dar_ul_ifta INTEGER,
+        FOREIGN KEY (dar_ul_ifta) REFERENCES dar_ul_ifta(id)
+    )
+''')
 
-# Create the "fatwa" table with issued_at as DATE
+# Create "bab" table with reference to "kitab" (subcategory of "kitab")
+cursor.execute('''
+    CREATE TABLE IF NOT EXISTS bab (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        en_id TEXT UNIQUE,
+        urdu TEXT,
+        kitab INTEGER,
+        dar_ul_ifta INTEGER,
+        FOREIGN KEY (kitab) REFERENCES kitab(id),
+        FOREIGN KEY (dar_ul_ifta) REFERENCES dar_ul_ifta(id)
+    )
+''')
+
+# Create "fasal" table with reference to "bab" (subcategory of "bab")
+cursor.execute('''
+    CREATE TABLE IF NOT EXISTS fasal (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        en_id TEXT UNIQUE,
+        urdu TEXT,
+        bab INTEGER,
+        dar_ul_ifta INTEGER,
+        FOREIGN KEY (bab) REFERENCES bab(id),
+        FOREIGN KEY (dar_ul_ifta) REFERENCES dar_ul_ifta(id)
+    )
+''')
+
+# Create "fatwa" table with issued_at as DATE
 cursor.execute('''
     CREATE TABLE IF NOT EXISTS fatwa (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -91,27 +116,34 @@ for filename in os.listdir(data_folder):
             for row in reader:
                 # Extract and insert into "kitab", "bab", and "fasal" tables
                 kitab_id, bab_id, fasal_id = None, None, None
-                for table_name, field_name in [("kitab", "kitab"), ("bab", "bab"), ("fasal", "fasal")]:
-                    urdu, english = extract_urdu_english(row[field_name])
-                    
-                    # Insert only if en_id does not already exist, then get ID
-                    cursor.execute(f'''
-                        INSERT OR IGNORE INTO {table_name} (en_id, urdu, dar_ul_ifta)
-                        VALUES (?, ?, ?)
-                    ''', (english, urdu, dar_ul_ifta_id))
-                    cursor.execute(f'''
-                        SELECT id FROM {table_name} WHERE en_id = ?
-                    ''', (english,))
-                    record_id = cursor.fetchone()[0]
-                    
-                    # Assign the ID to the appropriate variable
-                    if table_name == "kitab":
-                        kitab_id = record_id
-                    elif table_name == "bab":
-                        bab_id = record_id
-                    elif table_name == "fasal":
-                        fasal_id = record_id
                 
+                # Insert into "kitab" table
+                urdu_kitab, en_kitab = extract_urdu_english(row['kitab'])
+                cursor.execute('''
+                    INSERT OR IGNORE INTO kitab (en_id, urdu, dar_ul_ifta)
+                    VALUES (?, ?, ?)
+                ''', (en_kitab, urdu_kitab, dar_ul_ifta_id))
+                cursor.execute('SELECT id FROM kitab WHERE en_id = ?', (en_kitab,))
+                kitab_id = cursor.fetchone()[0]
+
+                # Insert into "bab" table, linked to "kitab"
+                urdu_bab, en_bab = extract_urdu_english(row['bab'])
+                cursor.execute('''
+                    INSERT OR IGNORE INTO bab (en_id, urdu, kitab, dar_ul_ifta)
+                    VALUES (?, ?, ?, ?)
+                ''', (en_bab, urdu_bab, kitab_id, dar_ul_ifta_id))
+                cursor.execute('SELECT id FROM bab WHERE en_id = ?', (en_bab,))
+                bab_id = cursor.fetchone()[0]
+
+                # Insert into "fasal" table, linked to "bab"
+                urdu_fasal, en_fasal = extract_urdu_english(row['fasal'])
+                cursor.execute('''
+                    INSERT OR IGNORE INTO fasal (en_id, urdu, bab, dar_ul_ifta)
+                    VALUES (?, ?, ?, ?)
+                ''', (en_fasal, urdu_fasal, bab_id, dar_ul_ifta_id))
+                cursor.execute('SELECT id FROM fasal WHERE en_id = ?', (en_fasal,))
+                fasal_id = cursor.fetchone()[0]
+
                 # Format issued_at date for SQLite
                 issued_at_date = parse_date(row['issued_at'])
                 
