@@ -5,7 +5,7 @@ import re
 from datetime import datetime
 
 # Database file path
-db_path = "../db.sqlite"
+db_path = "../fatawa.db"
 
 # Connect to SQLite database
 conn = sqlite3.connect(db_path)
@@ -41,7 +41,7 @@ cursor.execute('''
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         en_id TEXT UNIQUE,
         name TEXT,
-        kitab INTEGER
+        kitab INTEGER,
         FOREIGN KEY (kitab) REFERENCES kitab(id)
     )
 ''')
@@ -52,7 +52,7 @@ cursor.execute('''
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         en_id TEXT UNIQUE,
         name TEXT,
-        bab INTEGER
+        bab INTEGER,
         FOREIGN KEY (bab) REFERENCES bab(id)
     )
 ''')
@@ -133,7 +133,7 @@ for filename in os.listdir(data_folder):
                 urdu_fasal, en_fasal = extract_urdu_english(row['fasal'])
                 cursor.execute('''
                     INSERT OR IGNORE INTO fasal (en_id, name, bab)
-                    VALUES (?, ?, ?, ?)
+                    VALUES (?, ?, ?)
                 ''', (en_fasal, urdu_fasal, bab_id))
                 cursor.execute('SELECT id FROM fasal WHERE en_id = ?', (en_fasal,))
                 fasal_id = cursor.fetchone()[0]
