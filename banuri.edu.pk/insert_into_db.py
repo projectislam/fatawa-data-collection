@@ -31,9 +31,7 @@ cursor.execute('''
     CREATE TABLE IF NOT EXISTS kitab (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         en_id TEXT UNIQUE,
-        urdu TEXT,
-        dar_ul_ifta INTEGER,
-        FOREIGN KEY (dar_ul_ifta) REFERENCES dar_ul_ifta(id)
+        name TEXT
     )
 ''')
 
@@ -42,11 +40,9 @@ cursor.execute('''
     CREATE TABLE IF NOT EXISTS bab (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         en_id TEXT UNIQUE,
-        urdu TEXT,
-        kitab INTEGER,
-        dar_ul_ifta INTEGER,
-        FOREIGN KEY (kitab) REFERENCES kitab(id),
-        FOREIGN KEY (dar_ul_ifta) REFERENCES dar_ul_ifta(id)
+        name TEXT,
+        kitab INTEGER
+        FOREIGN KEY (kitab) REFERENCES kitab(id)
     )
 ''')
 
@@ -55,11 +51,9 @@ cursor.execute('''
     CREATE TABLE IF NOT EXISTS fasal (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         en_id TEXT UNIQUE,
-        urdu TEXT,
-        bab INTEGER,
-        dar_ul_ifta INTEGER,
-        FOREIGN KEY (bab) REFERENCES bab(id),
-        FOREIGN KEY (dar_ul_ifta) REFERENCES dar_ul_ifta(id)
+        name TEXT,
+        bab INTEGER
+        FOREIGN KEY (bab) REFERENCES bab(id)
     )
 ''')
 
@@ -120,27 +114,27 @@ for filename in os.listdir(data_folder):
                 # Insert into "kitab" table
                 urdu_kitab, en_kitab = extract_urdu_english(row['kitab'])
                 cursor.execute('''
-                    INSERT OR IGNORE INTO kitab (en_id, urdu, dar_ul_ifta)
-                    VALUES (?, ?, ?)
-                ''', (en_kitab, urdu_kitab, dar_ul_ifta_id))
+                    INSERT OR IGNORE INTO kitab (en_id, name)
+                    VALUES (?, ?)
+                ''', (en_kitab, urdu_kitab))
                 cursor.execute('SELECT id FROM kitab WHERE en_id = ?', (en_kitab,))
                 kitab_id = cursor.fetchone()[0]
 
                 # Insert into "bab" table, linked to "kitab"
                 urdu_bab, en_bab = extract_urdu_english(row['bab'])
                 cursor.execute('''
-                    INSERT OR IGNORE INTO bab (en_id, urdu, kitab, dar_ul_ifta)
-                    VALUES (?, ?, ?, ?)
-                ''', (en_bab, urdu_bab, kitab_id, dar_ul_ifta_id))
+                    INSERT OR IGNORE INTO bab (en_id, name, kitab)
+                    VALUES (?, ?, ?)
+                ''', (en_bab, urdu_bab, kitab_id))
                 cursor.execute('SELECT id FROM bab WHERE en_id = ?', (en_bab,))
                 bab_id = cursor.fetchone()[0]
 
                 # Insert into "fasal" table, linked to "bab"
                 urdu_fasal, en_fasal = extract_urdu_english(row['fasal'])
                 cursor.execute('''
-                    INSERT OR IGNORE INTO fasal (en_id, urdu, bab, dar_ul_ifta)
+                    INSERT OR IGNORE INTO fasal (en_id, name, bab)
                     VALUES (?, ?, ?, ?)
-                ''', (en_fasal, urdu_fasal, bab_id, dar_ul_ifta_id))
+                ''', (en_fasal, urdu_fasal, bab_id))
                 cursor.execute('SELECT id FROM fasal WHERE en_id = ?', (en_fasal,))
                 fasal_id = cursor.fetchone()[0]
 
