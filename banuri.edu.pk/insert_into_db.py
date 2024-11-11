@@ -23,7 +23,7 @@ cursor.execute('''
 ''')
 cursor.execute('''
     INSERT OR IGNORE INTO dar_ul_ifta (en_id, name, logo, website) VALUES (?, ?, ?, ?)
-''', ("banuri", "Banuri Town", "path/to/logo.png", "https://banuri.edu.pk"))
+''', ("banuri", "جامعہ علوم اسلامیہ علامہ محمد یوسف بنوری ٹاؤن", "banuri.webp", "https://banuri.edu.pk"))
 dar_ul_ifta_id = cursor.lastrowid  # Get the ID of the inserted row
 
 # Create "kitab" table (top-level category)
