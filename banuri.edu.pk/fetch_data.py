@@ -131,7 +131,7 @@ def main():
     total_pages = get_total_pages()
     print(f"Total pages found: {total_pages}")
     
-    for page in range(1, total_pages + 1):
+    for page in range(1208, total_pages + 1):
         print(f"Scraping page {page} of {total_pages}")
         question_links = get_question_links(page)
         
@@ -145,7 +145,7 @@ def main():
         
         save_to_csv(page, questions_data)
         print(f"Saved page {page} data to {DATA_DIR}/{page}.csv")
-        time.sleep(2)  # Pause between pages
+        # time.sleep(2)  # Pause between pages
 
 if __name__ == "__main__":
     main()
