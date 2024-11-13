@@ -14,6 +14,7 @@ options = webdriver.ChromeOptions()
 
 # Set up Chrome driver with webdriver-manager
 # driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+# driver = webdriver.Chrome()
 
 driver = uc.Chrome(version_main=130, options=options)
 
@@ -25,12 +26,19 @@ with open("./topics.json", "r", encoding="utf-8") as file:
 # Function to scrape a topic page
 def scrape_topic(topic):
     link = topic["link"]
+
+    print(link)
+
     driver.get(link)
+
+    print("fetch link")
 
     # Wait for Cloudflare verification to complete
     time.sleep(10)  # Adjust as needed based on Cloudflare delay
 
-    # Find total pages by accessing the last page link
+    print("after sleep")
+
+    # Find total pages by accessing the last page links
     try:
         last_page_link = driver.find_element(By.CSS_SELECTOR, "#midle_content > div > div:nth-child(2) > nav > ul > li:last-child > a")
         total_pages = int(last_page_link.get_attribute("href").split("=")[-1])
@@ -48,12 +56,19 @@ def scrape_topic(topic):
         # Find question list items
         questions = driver.find_elements(By.CSS_SELECTOR, "#recent_fatwas > ul > li")
 
+        print(len(questions))
+
         # Extract and save each question's details
         for question in questions:
             try:
                 question_link = question.find_element(By.TAG_NAME, "a").get_attribute("href")
+                
+                print("Fetching question data", question_link)
+                
                 driver.get(question_link)
                 # time.sleep(5)  # Wait for question page to load
+
+                print("Fetch complete for question")
 
                 # Extract details on the question page
                 fatwa_number = driver.find_element(By.CSS_SELECTOR, "#recent_fatwas > ul > li > div > p.quesid > span").text.split(":")[-1].strip()
@@ -61,6 +76,8 @@ def scrape_topic(topic):
                 title = driver.find_element(By.CSS_SELECTOR, "#recent_fatwas > ul > li > h2:nth-child(2) > p").text.strip()
                 question_text = driver.find_element(By.CSS_SELECTOR, "#recent_fatwas > ul > li > h2:nth-child(3) > p").text.replace("سوال :", "").strip()
                 answer = driver.find_element(By.CSS_SELECTOR, "#recent_fatwas > ul > li").get_attribute("innerHTML")
+
+                print("Element extracted")
 
                 # Prepare data row
                 data_row = {
@@ -74,6 +91,8 @@ def scrape_topic(topic):
                     "category_level_1": topic["kitab"],
                     "category_level_2": topic["bab"].split("(")[0].strip()
                 }
+
+                print(data_row)
 
                 # Save data to CSV
                 csv_filename = f"./data/{link.split('/')[-2]}-{page_num}.csv"
