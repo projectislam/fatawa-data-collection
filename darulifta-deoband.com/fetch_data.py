@@ -140,7 +140,7 @@ print("Scrap Starting....")
 
 sequence_number = 1
 
-for topic in topics[2:]:
+for topic in topics:
     scrape_topic(topic, sequence_number)
     sequence_number = sequence_number + 1
 
