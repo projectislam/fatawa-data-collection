@@ -15,108 +15,28 @@ options.add_argument("--no-sandbox")
 
 driver = uc.Chrome(options=options)
 
-driver.set_page_load_timeout(10)  # Timeout for loading each page
+link = "https://darulifta-deoband.com/home/ur/world-religions/32843"
 
-# Ensure the data directory exists
-os.makedirs("./data", exist_ok=True)
+driver.get(link)
 
-def get_total_pages(link):
-    print("Scrapping Link", link)
+time.sleep(15)
 
-    driver.get(link)
+# Find the <li> element containing the .fatwa_answer class
+li_element = driver.find_element(By.CSS_SELECTOR, "#recent_fatwas > ul > li")
 
-    try:
-        last_page_link = driver.find_element(By.CSS_SELECTOR, "#midle_content > div > div:nth-child(2) > nav > ul > li:last-child > a")
-        total_pages = int(last_page_link.get_attribute("href").split("=")[-1])
-    except Exception as e:
-        print("Could not find total pages:", e)
-        return
-    
-    print("Finding total pages", total_pages)
+# Find the <p class="fatwa_answer"> element inside <li>
+fatwa_answer_element = li_element.find_element(By.CSS_SELECTOR, ".fatwa_answer")
 
-    return total_pages
+# Get the next sibling elements after the .fatwa_answer element
+# This can be done using the `find_elements` method to find all subsequent elements.
+# We want everything after the fatwa_answer tag, so we will select the siblings.
 
-def scrape_topic(topic):
-    try:
-        link = topic["link"]
+# Use XPath to select all siblings after fatwa_answer element
+siblings_after_fatwa = fatwa_answer_element.find_elements(By.XPATH, "following-sibling::*")
 
-        total_pages = get_total_pages(link)
-
-        for page_num in range(1, total_pages + 1):
-            print("Fetching page number", page_num)
-
-            page_link = f"{link}?page={page_num}"
-
-            print(page_link)
-
-            driver.get(page_link)
-
-            questions = driver.find_elements(By.CSS_SELECTOR, "#recent_fatwas > ul > li")
-
-            print(len(questions), "questions found on page number", page_num)
-
-            # Extract and save each question's details
-            for question in questions:
-                try:
-                    question_link = question.find_element(By.TAG_NAME, "a").get_attribute("href")
-                    
-                    print("Fetching question", question_link)
-                    
-                    driver.get(question_link)
-
-                    print("Linked fetched", question_link)
-
-                    # Extract details on the question page
-
-                    # fatwa_number = driver.find_element(By.CSS_SELECTOR, "#recent_fatwas > ul > li > div > p.quesid > span").text.split(":")[-1].strip()
-                    # issued_at = driver.find_element(By.CSS_SELECTOR, "#recent_fatwas > ul > li > p.fatwa_answer > span.answer_date_urdu").text.split(" :")[0]
-                    # title = driver.find_element(By.CSS_SELECTOR, "#recent_fatwas > ul > li > h2:nth-child(2)").text.replace("عنوان:", "").strip()
-                    # question_text = driver.find_element(By.CSS_SELECTOR, "#recent_fatwas > ul > li > h2:nth-child(3)").text.replace("سوال:", "").strip()
-                    # answer = driver.find_element(By.CSS_SELECTOR, "#recent_fatwas > ul > li").get_attribute("innerHTML")
-
-                    # Prepare data row
-
-                    # data_row = {
-                    #     "issued_at": issued_at,
-                    #     "link": question_link,
-                    #     "title": title,
-                    #     "question": question_text,
-                    #     "answer": answer,
-                    #     "fatwa_number": fatwa_number,
-                    #     "dar_ul_ifta": "deoband",
-                    #     "category_level_1": topic["kitab"],
-                    #     "category_level_2": topic["bab"].split("(")[0].strip()
-                    # }
-
-                    # Save data to CSV
-
-                    # csv_filename = f"./data/{link.split('/')[-2]}-{page_num}.csv"
-                    # with open(csv_filename, "a", encoding="utf-8-sig", newline="") as csvfile:
-                    #     writer = csv.DictWriter(csvfile, fieldnames=data_row.keys())
-                    #     if csvfile.tell() == 0:
-                    #         writer.writeheader()  # Write header if file is empty
-                    #     writer.writerow(data_row)
-
-                    # print(f"Saved data for fatwa_number {fatwa_number}")
-                except Exception as e:
-                    print("Error scraping question:", e)
-                    exit()
-    except Exception as e:
-        print(f"Error occurred: {e}")
-        driver.quit()
-
-with open("./topics.json", "r", encoding="utf-8") as file:
-    topics = json.load(file)
-
-driver.get("https://darulifta-deoband.com/home/qa_ur/islamic-beliefs/1")
-
-print("Manually Resolve captcha on browser")
-time.sleep(10)
-
-print("Scrap Starting....")
-
-for topic in topics[1:2]:
-    scrape_topic(topic)
+# Now let's print the HTML content of all the following siblings
+for sibling in siblings_after_fatwa:
+    print(sibling.get_attribute("outerHTML"))
 
 # Close browser
 driver.quit()
