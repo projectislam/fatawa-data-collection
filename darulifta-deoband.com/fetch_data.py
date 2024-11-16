@@ -20,6 +20,12 @@ driver = uc.Chrome(options=options)
 # Ensure the data directory exists
 os.makedirs("./data", exist_ok=True)
 
+def get_start_page(link):
+    # if link == "https://darulifta-deoband.com/home/qa_ur/islamic-beliefs/1":
+    #     return 5
+    
+    return 1
+
 def get_total_pages(link):
     print("Scrapping Link", link)
 
@@ -42,7 +48,9 @@ def scrape_topic(topic):
 
         total_pages = get_total_pages(link)
 
-        for page_num in range(1, total_pages + 1):
+        start_page = get_start_page(link)
+
+        for page_num in range(start_page, total_pages + 1):
             print("Fetching page number", page_num)
 
             page_link = f"{link}?page={page_num}"
@@ -130,7 +138,7 @@ time.sleep(15)
 
 print("Scrap Starting....")
 
-for topic in topics:
+for topic in topics[2:]:
     scrape_topic(topic)
 
 # Close browser
