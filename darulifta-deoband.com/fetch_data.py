@@ -42,7 +42,7 @@ def get_total_pages(link):
 
     return total_pages
 
-def scrape_topic(topic):
+def scrape_topic(topic, sequence_number):
     try:
         link = topic["link"]
 
@@ -113,7 +113,7 @@ def scrape_topic(topic):
 
                     # Save data to CSV
 
-                    csv_filename = f"./data/{link.split('/')[-2]}-{page_num}.csv"
+                    csv_filename = f"./data/{sequence_number}-{link.split('/')[-2]}-{page_num}.csv"
                     with open(csv_filename, "a", encoding="utf-8-sig", newline="") as csvfile:
                         writer = csv.DictWriter(csvfile, fieldnames=data_row.keys())
                         if csvfile.tell() == 0:
@@ -138,8 +138,11 @@ time.sleep(15)
 
 print("Scrap Starting....")
 
+sequence_number = 1
+
 for topic in topics[2:]:
-    scrape_topic(topic)
+    scrape_topic(topic, sequence_number)
+    sequence_number = sequence_number + 1
 
 # Close browser
 driver.quit()
