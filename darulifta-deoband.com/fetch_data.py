@@ -21,8 +21,8 @@ driver = uc.Chrome(options=options)
 os.makedirs("./data", exist_ok=True)
 
 def get_start_page(link):
-    # if link == "https://darulifta-deoband.com/home/qa_ur/islamic-beliefs/1":
-    #     return 5
+    if link == "https://darulifta-deoband.com/home/qa_ur/islamic-beliefs/1":
+        return 78
     
     return 1
 
@@ -52,6 +52,8 @@ def scrape_topic(topic, sequence_number):
 
         for page_num in range(start_page, total_pages + 1):
             print("Fetching page number", page_num)
+
+            sequence_number = sequence_number + 1
 
             page_link = f"{link}?page={page_num}"
 
@@ -123,7 +125,7 @@ def scrape_topic(topic, sequence_number):
                     print(f"Saved data for fatwa_number {fatwa_number}")
                 except Exception as e:
                     print("Error scraping question:", e)
-                    exit()
+
     except Exception as e:
         print(f"Error occurred: {e}")
         driver.quit()
@@ -138,11 +140,10 @@ time.sleep(15)
 
 print("Scrap Starting....")
 
-sequence_number = 1
+sequence_number = 77
 
 for topic in topics:
     scrape_topic(topic, sequence_number)
-    sequence_number = sequence_number + 1
 
 # Close browser
 driver.quit()
