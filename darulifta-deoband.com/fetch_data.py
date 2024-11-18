@@ -21,8 +21,8 @@ driver = uc.Chrome(options=options)
 os.makedirs("./data", exist_ok=True)
 
 def get_start_page(link):
-    if link == "https://darulifta-deoband.com/home/qa_ur/islamic-beliefs/1":
-        return 78
+    # if link == "https://darulifta-deoband.com/home/qa_ur/islamic-beliefs/1":
+    #     return 78
     
     return 1
 
@@ -140,10 +140,16 @@ time.sleep(15)
 
 print("Scrap Starting....")
 
-sequence_number = 77
+sequence_number = 0
 
-for topic in topics:
+for topic in topics[:1]:
+    print("Scraping...", topic["link"])
+    
     scrape_topic(topic, sequence_number)
+
+    print("Scraping complete for topic", topic["link"])
+
+print("->> END")
 
 # Close browser
 driver.quit()
