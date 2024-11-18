@@ -140,9 +140,9 @@ time.sleep(15)
 
 print("Scrap Starting....")
 
-sequence_number = 86
+sequence_number = 98
 
-for topic in topics[3:4]:
+for topic in topics[4:5]:
     print("Scraping...", topic["link"])
     
     scrape_topic(topic, sequence_number)
