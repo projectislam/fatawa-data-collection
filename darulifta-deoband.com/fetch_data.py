@@ -24,7 +24,7 @@ def get_start_page(link):
     # if link == "https://darulifta-deoband.com/home/qa_ur/islamic-beliefs/1":
     #     return 78
     
-    return 1
+    return 56 + 1
 
 def get_total_pages(link):
     print("Scrapping Link", link)
@@ -140,9 +140,10 @@ time.sleep(15)
 
 print("Scrap Starting....")
 
-sequence_number = 228
+sequence_number = 308
+topic_number = 10
 
-for topic in topics[8:9]:
+for topic in topics[topic_number - 1:topic_number]:
     print("Scraping...", topic["link"])
     
     scrape_topic(topic, sequence_number)
