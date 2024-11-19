@@ -20,8 +20,7 @@ driver = uc.Chrome(options=options)
 # Ensure the data directory exists
 os.makedirs("./data", exist_ok=True)
 
-def get_start_page(link):
-    return 81 + 1
+page_number = 0
 
 def get_total_pages(link):
     print("Scrapping Link", link)
@@ -45,7 +44,7 @@ def scrape_topic(topic, sequence_number):
 
         total_pages = get_total_pages(link)
 
-        start_page = get_start_page(link)
+        start_page = page_number + 1
 
         for page_num in range(start_page, total_pages + 1):
             print("Fetching page number", page_num)
@@ -137,8 +136,9 @@ time.sleep(15)
 
 print("Scrap Starting....")
 
-sequence_number = 573
 topic_number = 15
+sequence_number = 573
+page_number = 81
 
 for topic in topics[topic_number - 1:topic_number]:
     print("Scraping...", topic["link"])
