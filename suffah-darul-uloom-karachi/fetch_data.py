@@ -7,8 +7,18 @@ base_url = "https://www.suffahpk.com/category/fatawa-darul-uloom-karachi/"
 data_dir = "./data"
 
 bismillah_text = "بسم اللہ الرحمن الرحیم"
+jawab = "جواب :"
 jawab_text_1 = "الجواب حامدا ومصلیا"
 jawab_text_2 = "الجواب"
+jawab_text_3 = "الجواب حامداومصلیاً"
+jawab_text_4 = "الجواب بعون ملہم الصواب"
+jawab_text_5 = "الجواب حامداومصلیا"
+jawab_text_6 = "الجواب حامدامصلیا ً"
+jawab_text_7 = "الجواب حماداً و مصلیاً"
+jawab_text_8 = "الجواب و باللہ التوفیق و ھو المستعان"
+jawab_text_9 = "الجواب باسم ملھم الصواب"
+jawabs = [jawab_text_1, jawab_text_2, jawab_text_3, jawab_text_4, jawab_text_5,
+          jawab_text_6, jawab_text_7, jawab_text_8, jawab_text_9]
 
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.63 Safari/537.36",
@@ -67,16 +77,20 @@ def get_question_detail(question):
         if next_para:
             next_text = next_para.get_text()
 
-        if text == bismillah_text and (next_text == jawab_text_1 or next_text == jawab_text_2):
+        if text == bismillah_text and (next_text in jawabs or jawab in next_text):
             answer_start = True
 
-        if text == jawab_text_1 or text == jawab_text_2:
+        if text in jawabs or jawab in text:
             answer_start = True
 
         if answer_start:
             answer_html += str(para)
         else:
             question_html += str(para)
+
+    if not answer_html:
+        answer_html = question_html
+        question_html = ""
 
     return {
         "answer_html": answer_html,
