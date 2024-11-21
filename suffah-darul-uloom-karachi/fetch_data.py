@@ -17,8 +17,9 @@ jawab_text_6 = "الجواب حامدامصلیا ً"
 jawab_text_7 = "الجواب حماداً و مصلیاً"
 jawab_text_8 = "الجواب و باللہ التوفیق و ھو المستعان"
 jawab_text_9 = "الجواب باسم ملھم الصواب"
+jawab_text_10 = "الجواب   حامداومصلیا"
 jawabs = [jawab_text_1, jawab_text_2, jawab_text_3, jawab_text_4, jawab_text_5,
-          jawab_text_6, jawab_text_7, jawab_text_8, jawab_text_9]
+          jawab_text_6, jawab_text_7, jawab_text_8, jawab_text_9, jawab_text_10]
 
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.63 Safari/537.36",
