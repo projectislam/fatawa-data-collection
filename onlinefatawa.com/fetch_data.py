@@ -25,11 +25,18 @@ def get_question_list(page_link):
         title_ele = row.select_one("td:nth-child(3) > span")
         link_ele = row.find("a", class_="link-danger")
 
+        if not link_ele:
+            continue
+
         date = date_ele.get_text()
         fatwa_num = fatwa_num_ele.get_text()
         title = title_ele.get_text().strip()
         link = link_ele.get("href")
         link = link.rsplit("/", 1)[0]
+        last_part = link.rstrip("/").split("/")[-1]
+
+        if last_part != fatwa_num:
+            link = f"https://onlinefatawa.com/view_fatwa_unicode/{fatwa_num}"
 
         questions.append({
             "date": date,
@@ -63,7 +70,7 @@ def get_question_detail(question):
     question_ele = soup.select_one("body > div > div.container-fluid.contain > div > div.col-md-8 > p:nth-child(5)")
     question_html = str(question_ele)
 
-    answer_ele = soup.select_one("body > div > div.container-fluid.contain > div > div.col-md-8 > h5")
+    answer_ele = soup.select_one("body > div > div.container-fluid.contain > div > div.col-md-8 h5.amiri")
     answer_html = str(answer_ele)
 
     siblings = answer_ele.find_next_siblings()
@@ -95,7 +102,7 @@ total_fatawa = 13950
 fatawa_per_page = 150
 total_pages = int(total_fatawa / 150)
 
-for page_number in range(1, total_pages + 1):
+for page_number in range(24, total_pages + 1):
     print("Page number", page_number)
 
     num = get_page_number(page_number)
