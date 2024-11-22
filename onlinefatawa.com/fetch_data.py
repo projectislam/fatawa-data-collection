@@ -10,6 +10,7 @@ def get_page_number(page):
     return page * 150
 
 def get_question_list(page_link):
+    print("Getting question list from...", page_link)
     response = requests.get(page_link)
 
     soup = BeautifulSoup(response.text, "html.parser")
@@ -28,6 +29,7 @@ def get_question_list(page_link):
         fatwa_num = fatwa_num_ele.get_text()
         title = title_ele.get_text().strip()
         link = link_ele.get("href")
+        link = link.rsplit("/", 1)[0]
 
         questions.append({
             "date": date,
@@ -93,7 +95,7 @@ total_fatawa = 13950
 fatawa_per_page = 150
 total_pages = int(total_fatawa / 150)
 
-for page_number in range(0, total_pages + 1):
+for page_number in range(1, total_pages + 1):
     print("Page number", page_number)
 
     num = get_page_number(page_number)
@@ -103,8 +105,8 @@ for page_number in range(0, total_pages + 1):
 
     data_rows = []
 
-    for question in questions:
-        print(question["link"])
+    for index, question in enumerate(questions, start=1):
+        print(page_number, index, question["link"])
 
         content = get_question_detail(question)
 
