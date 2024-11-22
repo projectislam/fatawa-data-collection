@@ -18,8 +18,28 @@ jawab_text_7 = "الجواب حماداً و مصلیاً"
 jawab_text_8 = "الجواب و باللہ التوفیق و ھو المستعان"
 jawab_text_9 = "الجواب باسم ملھم الصواب"
 jawab_text_10 = "الجواب   حامداومصلیا"
+jawab_text_11 = "الجواب حامداًومصلیاً"
+jawab_text_12 = "الجواب حامداومصلیاً  "
+jawab_text_13 = "الجواب حامداومصلیا "
+jawab_text_14 = "الجواب حامداومصلیا"
+jawab_text_15 = "الجواب حامدا و مصلیا"
+jawab_text_16 = "الجواب حامداومصلیا"
+jawab_text_17 = "الجواب حامدا ومصلیا "
+jawab_text_18 = "الجواب حامداومصلیا ً"
+jawab_text_19 = "الجواب حامداومصلیاً "
+jawab_text_20 = "الجواب حامداً و مصلیاً"
+jawab_text_21 = " الجواب   حامداومصلیا ً"
+jawab_text_22 = "الجواب حامدًا ومصلیاً"
+jawab_text_23 = "الجواب و باللہ التوفیق و ھو المستعان"
+jawab_text_24 = "الجواب  حامداومصلیاً"
+jawab_text_25 = " الجواب حامداومصلیا ً"
+jawab_text_26 = " الجواب حامداومصلیا"
 jawabs = [jawab_text_1, jawab_text_2, jawab_text_3, jawab_text_4, jawab_text_5,
-          jawab_text_6, jawab_text_7, jawab_text_8, jawab_text_9, jawab_text_10]
+          jawab_text_6, jawab_text_7, jawab_text_8, jawab_text_9, jawab_text_10, 
+          jawab_text_11, jawab_text_12, jawab_text_13, jawab_text_14, jawab_text_15,
+          jawab_text_16, jawab_text_17, jawab_text_18, jawab_text_19, jawab_text_20,
+          jawab_text_21, jawab_text_22, jawab_text_23, jawab_text_24, jawab_text_25,
+          jawab_text_26]
 
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.63 Safari/537.36",
@@ -106,7 +126,7 @@ total_pages = 34
 start_page = 1
 
 
-for page_num in range(start_page, total_pages):
+for page_num in range(start_page, total_pages + 1):
     print("Page number", page_num)
 
     question_list = get_question_list(page_num)
