@@ -54,26 +54,47 @@ def get_question_detail(question):
     category_lvl_1_ele = soup.select_one("div.entry-content.pagelayer-post-excerpt figure.wp-block-table > table tr:nth-child(1) > td:nth-child(2)")
     category_lvl_2_ele = soup.select_one("div.entry-content.pagelayer-post-excerpt figure.wp-block-table > table tr:nth-child(1) > td:nth-child(3)")
 
-    category_lvl_1 = category_lvl_1_ele.get_text().strip()
-    category_lvl_2 = category_lvl_2_ele.get_text().strip()
+    category_lvl_1 = ""
+    category_lvl_2 = ""
 
-    content_ele = soup.select_one("div.entry-content.pagelayer-post-excerpt > div > p:nth-child(3)")
+    if category_lvl_1_ele:
+        category_lvl_1 = category_lvl_1_ele.get_text().strip()
+    else:
+        category_ele = soup.select_one(".pagelayer-post-info-label.pagelayer-terms > a")
+        if category_ele:
+            category_lvl_1 = category_ele.get_text().strip()
 
-    question_html = str(content_ele)
+    if category_lvl_2_ele:
+        category_lvl_2 = category_lvl_2_ele.get_text().strip()
+
+    content_ele = soup.select_one("div.entry-content.pagelayer-post-excerpt > div > .has-text-align-center")
+
+    question_html = ""
     answer_html = ""
 
-    paras = content_ele.find_next_siblings()
+    if content_ele:
+        paras = content_ele.find_next_siblings()
 
-    answer_start = False
+        answer_start = False
 
-    for para in paras:
-        if "has-text-align-center" in para.get("class", []):
-            answer_start = True
+        for para in paras:
+            if "has-text-align-center" in para.get("class", []):
+                answer_start = True
 
-        if answer_start:
-            answer_html += str(para)
-        else:
-            question_html += str(para)
+            if answer_start:
+                answer_html += str(para)
+            else:
+                question_html += str(para)
+    else:
+        article_content_ele = soup.select_one(".entry-content.pagelayer-post-excerpt div.pagelayer-col-holder")
+        answer_html = str(article_content_ele)
+
+    if not answer_html:
+        answer_html = question_html
+        question_html = ""
+
+    if not answer_html:
+        raise ValueError("Answer content not found")
 
     return {
         "category_lvl_1": category_lvl_1,
@@ -85,10 +106,9 @@ def get_question_detail(question):
 
 
 
-total_pages = 119
-page_number = 1
+total_pages = 1119
 
-for page_number in range(1, total_pages + 1):
+for page_number in range(1117, total_pages + 1):
     page_link = f"{base_url}/page/{page_number}"
 
     print("Getting question from page", page_link)
@@ -96,6 +116,9 @@ for page_number in range(1, total_pages + 1):
     questions = get_question_list(page_link)
 
     print(len(questions), "Total question found on page number", page_number)
+
+    if not questions:
+        continue
 
     data_rows = []
 
