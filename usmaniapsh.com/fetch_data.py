@@ -1,6 +1,7 @@
 import requests
 import os
 import csv
+import time
 from bs4 import BeautifulSoup
 
 base_url = "https://usmaniapsh.com/new_questions"
@@ -35,6 +36,7 @@ def get_question_list(page_link):
     return questions
 
 def get_question_detail(question):
+    time.sleep(0.5)
     link = question["link"]
     response = requests.get(link)
     soup = BeautifulSoup(response.text, "html.parser")
@@ -45,6 +47,9 @@ def get_question_detail(question):
     dateELe = soup.select_one("div.listing-bok div.col-md-12.sawal-jawab > div.row > div:nth-child(3)")
     tagsEle = soup.select("div.listing-bok div.col-md-12.sawal-jawab a")
 
+    if not questionELe:
+        print(response.text)
+
     question = questionELe.get_text().strip()
     answer_html = str(answerEle)
     fatwa_number = fatwaEle.get_text().strip()
@@ -52,6 +57,9 @@ def get_question_detail(question):
     kitab = ""
     bab = ""
     fasal = ""
+
+    if not question or not answer_html:
+        raise ValueError("Question or answer content not found")
 
     for tag in tagsEle:
         href = tag.get("href", None)
