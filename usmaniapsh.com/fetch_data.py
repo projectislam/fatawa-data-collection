@@ -36,7 +36,6 @@ def get_question_list(page_link):
     return questions
 
 def get_question_detail(question):
-    time.sleep(0.5)
     link = question["link"]
     response = requests.get(link)
     soup = BeautifulSoup(response.text, "html.parser")
