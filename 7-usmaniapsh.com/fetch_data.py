@@ -88,7 +88,7 @@ total_pages = 148
 start_page = 0
 
 for page in range(start_page, total_pages + 1):
-    page_number = get_page_number(0)
+    page_number = get_page_number(page)
     page_link = f"{base_url}/{page_number}"
 
     print("Fetching page...", page_link)
@@ -117,7 +117,7 @@ for page in range(start_page, total_pages + 1):
             "fasal": content["fasal"]
         })
 
-    filename = f"{data_dir}/{start_page}.csv"
+    filename = f"{data_dir}/{page}.csv"
     with open(filename, mode='w', newline='', encoding='utf-8') as csv_file:
         fieldnames = data_rows[0]
         writer = csv.DictWriter(csv_file, fieldnames=fieldnames)

@@ -98,7 +98,7 @@ for page_number in range(start_page, total_pages + 1):
         })
 
 
-    filename = f"{data_dir}/{start_page}.csv"
+    filename = f"{data_dir}/{page_number}.csv"
     with open(filename, mode='w', newline='', encoding='utf-8') as csv_file:
         fieldnames = data_rows[0]
         writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
