@@ -39,9 +39,10 @@ def get_question_detail(question):
     response = requests.get(link)
     soup = BeautifulSoup(response.text, "html.parser")
 
+    html_ele = soup.select_one("div.col-md-8.minHeight > div:nth-child(1)")
     question_ele = soup.select_one("#printthis > div:nth-child(2)")
     answer_ele = soup.select_one("#printthis > div:nth-child(3)")
-    date_ele = soup.select_one("#form1 > div:nth-child(9) > div > div.col-md-8.minHeight > div:nth-child(1) > div.text-left.hidden-print > table > tr > td:nth-child(4)")
+    date_ele = soup.select_one("div.text-left.hidden-print > table tr td:nth-child(4)")
 
     question_html = str(question_ele)
     question_html = question_html.replace('<b class="text-danger">سوال: </b>', "")
@@ -51,6 +52,8 @@ def get_question_detail(question):
 
     date = date_ele.get_text().strip()
 
+    html_container = str(html_ele)
+
     parsed_url = urlparse(link)
     query_params = parse_qs(parsed_url.query)
     fatwa_number = query_params.get("id", [None])[0]
@@ -59,7 +62,8 @@ def get_question_detail(question):
         "question_html": question_html,
         "answer_html": answer_html,
         "fatwa_number": fatwa_number,
-        "date": date
+        "date": date,
+        "html_container": html_container
     }
 
 
