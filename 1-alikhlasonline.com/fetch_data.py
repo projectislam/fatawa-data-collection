@@ -70,16 +70,42 @@ def get_question_detail(question):
 total_pages = 224
 start_page = 1
 
-page_number = 1
+for page_number in range(start_page, total_pages + 1):
+    page_link = f"{base_url}/allquestions.aspx?lang=1&page={page_number}"
 
-page_link = f"{base_url}/allquestions.aspx?lang=1&page={page_number}"
+    print("Page number", page_number, page_link)
+    
+    questions = get_question_list(page_link)
 
-questions = get_question_list(page_link)
+    print(len(questions), "total questions found on page number", page_number)
 
-print(questions[:3])
+    data_rows = []
 
-question = questions[0]
+    for index, question in enumerate(questions, 1):
+        print(page_number, index, question["link"])
 
-content = get_question_detail(question)
+        content = get_question_detail(question)
 
-print(content)
+        data_rows.append({
+            "link": question["link"],
+            "title": question["title"],
+            "question_html": content["question_html"],
+            "answer_html": content["answer_html"],
+            "fatwa_number": content["fatwa_number"],
+            "issued_at": content["date"],
+            "html_container": content["html_container"],
+            "dar_ul_ifta": "alikhlasonline",
+        })
+
+
+    filename = f"{data_dir}/{start_page}.csv"
+    with open(filename, mode='w', newline='', encoding='utf-8') as csv_file:
+        fieldnames = data_rows[0]
+        writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+        writer.writeheader()
+        for data_row in data_rows:
+                writer.writerow(data_row)
+
+    print("->> Questions saved in", filename)
+
+print("END")
