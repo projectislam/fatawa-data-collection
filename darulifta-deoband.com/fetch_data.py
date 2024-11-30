@@ -136,10 +136,9 @@ time.sleep(15)
 
 print("Scrap Starting....")
 
-topic_number = 15
-sequence_number = 573
-page_number = 81
-
+topic_number = 37
+sequence_number = 1713
+page_number = 0
 for topic in topics[topic_number - 1:topic_number]:
     print("Scraping...", topic["link"])
     
