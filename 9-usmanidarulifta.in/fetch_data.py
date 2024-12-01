@@ -94,7 +94,7 @@ def get_topic_pages(topic_index, topic):
                     "link": question["link"],
                     "title": question["title"],
                     "question_html": question["question_html"],
-                    "answer": question["answer_html"],
+                    "answer_html": question["answer_html"],
                     "issued_at": question["date"],
                     "html_container": question["html_container"],
                     "dar_ul_ifta": "usmanidarulifta"

@@ -97,7 +97,7 @@ for page_number in range(start_page, total_pages + 1):
             "link": question["link"],
             "title": question["title"],
             "question_html": content["question_html"],
-            "answer": content["answer_html"],
+            "answer_html": content["answer_html"],
             "issued_at": content["date"],
             "category_lvl_1": question["category_lvl_1"],
             "html_container": content["html_container"],
