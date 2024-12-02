@@ -111,7 +111,7 @@ def get_question_detail(question):
         "category_lvl_1": category_lvl_1,
         "category_lvl_2": category_lvl_2,
         "fatwa_number": fatwa_number,
-        "html_container": html_ele
+        "html_container": str(html_ele)
     }
 
 topics = get_topic_list()
@@ -147,8 +147,6 @@ for topic_index, topic in enumerate(topics, 1):
             "dar_ul_ifta": "darultaqwa"
         })
 
-        break
-
     filename = f"{data_dir}/{topic_index}.csv"
     with open(filename, mode='w', newline='', encoding='utf-8') as csv_file:
         fieldnames = data_rows[0]
@@ -158,8 +156,6 @@ for topic_index, topic in enumerate(topics, 1):
                 writer.writerow(data_row)
 
     print("->> Questions saved in", filename)
-
-    break
 
 
 print("END")
