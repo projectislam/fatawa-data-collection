@@ -77,10 +77,10 @@ def get_question_detail(question):
     date_ele = html_ele.select_one("div.blog-detail-inf ul > li:nth-child(2)")
     topic_ele = html_ele.select_one("div.blog-detail-inf ul > li:nth-child(3)")
 
-    fatwa_number = fatwa_number_ele.get_text().strip().split(":")[0]
-    date = date_ele.get_text().strip().split(":")[0]
-    category_lvl_1 = topic_ele.select_one("a:nth-child(1)").get_text().strip()
-    category_lvl_2 = topic_ele.select_one("a:nth-child(2)").get_text().strip()
+    fatwa_number = fatwa_number_ele.get_text().strip().split(":")[1]
+    date = date_ele.get_text().strip().split(":")[1]
+    category_lvl_1 = topic_ele.select_one("a:nth-child(2)").get_text().strip()
+    category_lvl_2 = topic_ele.select_one("a:nth-child(3)").get_text().strip()
 
     container = html_ele.select_one("div.blog-detail-desc > h3")
     paras = container.find_next_siblings()
@@ -104,6 +104,15 @@ def get_question_detail(question):
             question_html += str(para)
 
     
+    return {
+        "question_html": question_html,
+        "answer_html": answer_html,
+        "date": date,
+        "category_lvl_1": category_lvl_1,
+        "category_lvl_2": category_lvl_2,
+        "fatwa_number": fatwa_number,
+        "html_container": html_ele
+    }
 
 topics = get_topic_list()
 total_topics = len(topics)
@@ -118,7 +127,39 @@ for topic_index, topic in enumerate(topics, 1):
 
     print(total_questions, "total questions found")
 
+    data_rows = []
+
     for question_index, question in enumerate(questions, 1):
         print(f"{question_index}/{total_questions}", question["link"])
 
         content = get_question_detail(question)
+
+        data_rows.append({
+            "link": question["link"],
+            "title": question["title"],
+            "question_html": content["question_html"],
+            "answer_html": content["answer_html"],
+            "fatwa_number": content["fatwa_number"],
+            "issued_at": content["date"],
+            "category_lvl_1": content["category_lvl_1"],
+            "category_lvl_2": content["category_lvl_2"],
+            "html_container": content["html_container"],
+            "dar_ul_ifta": "darultaqwa"
+        })
+
+        break
+
+    filename = f"{data_dir}/{topic_index}.csv"
+    with open(filename, mode='w', newline='', encoding='utf-8') as csv_file:
+        fieldnames = data_rows[0]
+        writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+        writer.writeheader()
+        for data_row in data_rows:
+                writer.writerow(data_row)
+
+    print("->> Questions saved in", filename)
+
+    break
+
+
+print("END")
