@@ -19,6 +19,16 @@ scraper = cloudscraper.create_scraper()
 
 os.makedirs(data_dir, exist_ok=True)
 
+def save_to_csv(filename, data_rows):
+    with open(filename, mode='w', newline='', encoding='utf-8') as csv_file:
+        fieldnames = data_rows[0]
+        writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+        writer.writeheader()
+        for data_row in data_rows:
+                writer.writerow(data_row)
+
+    print("->> Questions saved in", filename)
+
 def format_page_link(page_number):
     return f"{base_url}/?page={page_number}&filter=resolved"
 
@@ -102,18 +112,11 @@ for page_number in range(start_page, total_pages + 1):
             "category_lvl_1": question["category_lvl_1"],
             "html_container": content["html_container"],
             "html_container_2": content["html_container_2"],
-            "dar_ul_ifta": "ahnafmedia"
+            "dar_ul_ifta": "ahnafmedia.com"
         })
 
     filename = f"{data_dir}/{page_number}.csv"
-    with open(filename, mode='w', newline='', encoding='utf-8') as csv_file:
-        fieldnames = data_rows[0]
-        writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
-        writer.writeheader()
-        for data_row in data_rows:
-                writer.writerow(data_row)
-
-    print("->> Questions saved in", filename)
+    save_to_csv(filename, data_rows)
 
 
 print("END")
