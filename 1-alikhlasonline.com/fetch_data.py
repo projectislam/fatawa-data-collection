@@ -9,6 +9,16 @@ data_dir = "./data"
 
 os.makedirs(data_dir, exist_ok=True)
 
+def save_to_csv(filename, data_rows):
+    with open(filename, mode='w', newline='', encoding='utf-8') as csv_file:
+        fieldnames = data_rows[0]
+        writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+        writer.writeheader()
+        for data_row in data_rows:
+                writer.writerow(data_row)
+
+    print("->> Questions saved in", filename)
+
 def get_question_list(page_link):
     response = requests.get(page_link)
     soup = BeautifulSoup(response.text, "html.parser")
@@ -99,13 +109,6 @@ for page_number in range(start_page, total_pages + 1):
 
 
     filename = f"{data_dir}/{page_number}.csv"
-    with open(filename, mode='w', newline='', encoding='utf-8') as csv_file:
-        fieldnames = data_rows[0]
-        writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
-        writer.writeheader()
-        for data_row in data_rows:
-                writer.writerow(data_row)
-
-    print("->> Questions saved in", filename)
+    save_to_csv(filename, data_rows)
 
 print("END")

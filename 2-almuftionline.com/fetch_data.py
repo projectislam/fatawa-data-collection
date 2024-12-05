@@ -8,6 +8,16 @@ data_dir = "./data"
 
 os.makedirs(data_dir, exist_ok=True)
 
+def save_to_csv(filename, data_rows):
+    with open(filename, mode='w', newline='', encoding='utf-8') as csv_file:
+        fieldnames = data_rows[0]
+        writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+        writer.writeheader()
+        for data_row in data_rows:
+                writer.writerow(data_row)
+
+    print("->> Questions saved in", filename)
+
 def convert_year(year_str):
     if year_str.startswith("00"):
         return "20" + year_str[2:]
@@ -50,6 +60,8 @@ def get_question_detail(question):
     link = question["link"]
     response = requests.get(link)
     soup = BeautifulSoup(response.text, "html.parser")
+
+    html_container = soup.select_one("div.pagelayer-content div.pagelayer-row-holder > div.pagelayer-col > div.pagelayer-col-holder")
 
     category_lvl_1_ele = soup.select_one("div.entry-content.pagelayer-post-excerpt figure.wp-block-table > table tr:nth-child(1) > td:nth-child(2)")
     category_lvl_2_ele = soup.select_one("div.entry-content.pagelayer-post-excerpt figure.wp-block-table > table tr:nth-child(1) > td:nth-child(3)")
@@ -100,15 +112,17 @@ def get_question_detail(question):
         "category_lvl_1": category_lvl_1,
         "category_lvl_2": category_lvl_2,
         "question_html": question_html,
-        "answer_html": answer_html
+        "answer_html": answer_html,
+        "html_container": str(html_container)
     }
 
 
 
 
 total_pages = 1119
+start_page = 1
 
-for page_number in range(1117, total_pages + 1):
+for page_number in range(start_page, total_pages + 1):
     page_link = f"{base_url}/page/{page_number}"
 
     print("Getting question from page", page_link)
@@ -131,22 +145,16 @@ for page_number in range(1117, total_pages + 1):
             "issued_at": question["date"],
             "link": question["link"],
             "title": question["title"],
-            "question": content["question_html"],
-            "answer": content["answer_html"],
+            "question_html": content["question_html"],
+            "answer_html": content["answer_html"],
             "fatwa_number": question["fatwa_number"],
             "dar_ul_ifta": "jameya-tur-rasheed",
             "category_lvl_1": content["category_lvl_1"],
-            "category_lvl_2": content["category_lvl_2"]
+            "category_lvl_2": content["category_lvl_2"],
+            "html_container": content["html_container"]
         })
 
     filename = f"{data_dir}/{page_number}.csv"
-    with open(filename, mode='w', newline='', encoding='utf-8') as csv_file:
-        fieldnames = data_rows[0]
-        writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
-        writer.writeheader()
-        for data_row in data_rows:
-                writer.writerow(data_row)
-
-    print("->> Questions saved in", filename)
+    save_to_csv(filename, data_rows)
 
 print("END")

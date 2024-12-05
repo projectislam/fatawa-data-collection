@@ -1,151 +1,147 @@
+import os
+import csv
 import requests
 from bs4 import BeautifulSoup
-import csv
-import os
-import time
 
-QUESTION_PAGES_URL = "https://www.banuri.edu.pk/new-questions"
-QUESTION_URL = "https://www.banuri.edu.pk/readquestion"
-DATA_DIR = "./data"
+base_url = "https://www.banuri.edu.pk"
+data_dir = "./data"
 
-headers = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.63 Safari/537.36",
-    "Accept-Language": "en-US,en;q=0.9",
-    "Accept-Encoding": "gzip, deflate, br",
-    "Connection": "keep-alive"
-}
+sawal_text = "سوال"
+jawab_text = "جواب"
 
-# Create data directory if it doesn't exist
-os.makedirs(DATA_DIR, exist_ok=True)
+os.makedirs(data_dir, exist_ok=True)
 
-def get_total_pages():
-    response = requests.get(QUESTION_PAGES_URL)
-    soup = BeautifulSoup(response.text, 'html.parser')
-    
-    pagination = soup.select_one(
-        'body > section.inner-section > div > div > div.col-md-9.col-md-push-3.listing-bok > div:nth-child(3) > nav > ul > li:last-child a'
-    )
-
-    if pagination is None:
-        print("Pagination element not found. Please check the selector or the page structure.")
-        exit()
-
-    last_page_url = pagination['href']
-    total_pages = int(last_page_url.split('/')[-1])
-    
-    return total_pages
-
-def get_question_links(page_number):
-    url = f"{QUESTION_PAGES_URL}/page/{page_number}"
-    response = requests.get(url)
-    soup = BeautifulSoup(response.text, 'html.parser')
-    question_links = soup.select(
-        'body > section.inner-section > div > div > div.col-md-9.col-md-push-3.listing-bok > div:nth-child(2) > ul > li > a'
-    )
-    return [link['href'] for link in question_links]
-
-def get_question_details(question_url):
-    # Send a request to the question page
-    response = requests.get(question_url)
-    response.raise_for_status()
-    
-    # Parse the HTML content
-    soup = BeautifulSoup(response.content, 'html.parser')
-
-    # Extract "issued_at" from the URL
-    issued_at = question_url.split('/')[-1]
-
-    # Extract "title"
-    title_tag = soup.select_one(
-        'body > section.inner-section > div > div > div.col-md-9.col-md-push-3.listing-bok > div > div:nth-child(2) > h3'
-    )
-    title = title_tag.get_text(strip=True) if title_tag else "Title not found"
-
-    # Extract "question"
-    question_tag = soup.select_one(
-        'body > section.inner-section > div > div > div.col-md-9.col-md-push-3.listing-bok > div > div.col-md-12.sawal-jawab > p:nth-child(3)'
-    ) or soup.select_one(
-        'body > section.inner-section > div > div > div.col-md-9.col-md-push-3.listing-bok > div > div.col-md-12.sawal-jawab > p:nth-child(2)'
-    ) or soup.select_one(
-        '.sawal-jawab > p:nth-child(2)'
-    )
-    question_text = question_tag.get_text(strip=True) if question_tag else "Question not found"
-
-    # Extract "answer"
-    answer_html = ""
-    answer_start = soup.find('h4', class_='question_heading', string='جواب')
-    if answer_start:
-        for sibling in answer_start.find_next_siblings():
-            if sibling.name == "hr" and 'big-hr' in sibling.get("class", []):
-                break
-            answer_html += str(sibling)
-    
-    # Extract "fatwa_number"
-    fatwa_number_tag = soup.select_one('#fatwa_number')
-    fatwa_number = fatwa_number_tag.get_text(strip=True) if fatwa_number_tag else "Fatwa number not found"
-
-    # Set "dar_ul_ifta" to "banuri"
-    dar_ul_ifta = "banuri"
-
-    # Extract "kitab", "bab", and "fasal"
-    kitab, bab, fasal = None, None, None
-    tags = soup.find_all('div', class_='tag')
-    for tag in tags:
-        link = tag.find('a')
-        if link:
-            href = link.get("href", "")
-            if "/questions/kitab" in href:
-                kitab = (link.get_text(strip=True), href.split("/")[-1])
-            elif "/questions/bab" in href:
-                bab = (link.get_text(strip=True), href.split("/")[-1])
-            elif "/questions/fasal" in href:
-                fasal = (link.get_text(strip=True), href.split("/")[-1])
-
-    # Compile question details
-    return {
-        "issued_at": issued_at,
-        "link": question_url,
-        "title": title,
-        "question": question_text,
-        "answer": answer_html,
-        "fatwa_number": fatwa_number,
-        "dar_ul_ifta": dar_ul_ifta,
-        "kitab": kitab,
-        "bab": bab,
-        "fasal": fasal
-    }
-
-def save_to_csv(page_number, questions_data):
-    filename = f"{DATA_DIR}/{page_number}.csv"
+def save_to_csv(filename, data_rows):
     with open(filename, mode='w', newline='', encoding='utf-8') as csv_file:
-        fieldnames = [
-            "issued_at", "link", "title", "question", "answer", "fatwa_number",
-            "dar_ul_ifta", "kitab", "bab", "fasal"
-        ]
+        fieldnames = data_rows[0]
         writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
         writer.writeheader()
-        for question in questions_data:
-            writer.writerow(question)
+        for data_row in data_rows:
+                writer.writerow(data_row)
 
-def main():
-    total_pages = get_total_pages()
-    print(f"Total pages found: {total_pages}")
-    
-    for page in range(1208, total_pages + 1):
-        print(f"Scraping page {page} of {total_pages}")
-        question_links = get_question_links(page)
-        
-        questions_data = []
-        for question_link in question_links:
-            question_url = question_link
-            print(f"  Scraping question at {question_url}")
-            question_details = get_question_details(question_url)
-            questions_data.append(question_details)
-            # time.sleep(1)  # Pause to avoid rate limiting
-        
-        save_to_csv(page, questions_data)
-        print(f"Saved page {page} data to {DATA_DIR}/{page}.csv")
-        # time.sleep(2)  # Pause between pages
+    print("->> Questions saved in", filename)
 
-if __name__ == "__main__":
-    main()
+def get_question_list(page_link):
+    response = requests.get(page_link)
+    soup = BeautifulSoup(response.text, "html.parser")
+
+    items = soup.select("div.listing-bok ul.list-question > li > a")
+
+    questions = []
+
+    for item in items:
+        title = item.get_text().strip()
+        link = item.get("href")
+
+        questions.append({
+            "title": title,
+            "link": link
+        })
+
+    return questions
+
+
+def get_question_detail(question):
+    link = question["link"]
+
+    response = requests.get(link)
+    soup = BeautifulSoup(response.text, "html.parser")
+
+    date = link.split('/')[-1]
+
+    html_container = soup.select_one("div.listing-bok > div.row > div.sawal-jawab")
+    paras = html_container.find("h3").find_next_siblings()
+
+    question_html = ""
+    answer_html = ""
+
+    answer_start = False
+
+    for para in paras:
+        text = para.get_text().strip()
+
+        if jawab_text in text:
+            answer_start = True
+
+        if answer_start:
+            answer_html += str(para)
+        else:
+            question_html += str(para)
+
+        if para.name == "hr" and "big-hr" in para.get("class", []):
+            break
+
+    fatwa_number_ele = html_container.select_one("#fatwa_number")
+    fatwa_number = fatwa_number_ele.get_text().strip() if fatwa_number_ele else ""
+
+    tags = html_container.select("div.tag > a")
+
+    category_lvl_1 = ""
+    category_lvl_2 = ""
+    category_lvl_3 = ""
+
+    for tag in tags:
+        link = tag.get("href")
+        text = tag.get_text().strip()
+
+        if "/questions/kitab" in link:
+            category_lvl_1 = text
+        elif "/questions/bab" in link:
+            category_lvl_2 = text
+        elif "/questions/fasal" in link:
+            category_lvl_3 = text
+
+    return {
+        "link": link,
+        "question_html": question_html,
+        "answer_html": answer_html,
+        "date": date,
+        "fatwa_number": fatwa_number,
+        "category_lvl_1": category_lvl_1,
+        "category_lvl_2": category_lvl_2,
+        "category_lvl_3": category_lvl_3,
+        "html_container": str(html_container)
+    }
+
+total_pages = 1248
+start_page = 1
+
+for page_number in range(start_page, total_pages + 1):
+    page_link = f"{base_url}/new-questions/page/{page_number}"
+
+    print("Fetching...", page_number, page_link)
+
+    questions = get_question_list(page_link)
+    total_questions = len(questions)
+
+    print(total_questions, "total questions found on page", page_number)
+
+    data_rows = []
+
+    for question_number, question in enumerate(questions, 1):
+        print(page_number, f"{question_number}/{total_questions}", question["link"])
+
+        content = get_question_detail(question)
+
+        data_rows.append({
+            "link": question["link"],
+            "title": question["title"],
+            "question_html": content["question_html"],
+            "answer_html": content["answer_html"],
+            "issued_at": content["date"],
+            "fatwa_number": content["fatwa_number"],
+            "dar_ul_ifta": "banuri.edu.pk",
+            "category_lvl_1": content["category_lvl_1"],
+            "category_lvl_2": content["category_lvl_2"],
+            "category_lvl_3": content["category_lvl_3"],
+            "html_container": content["html_container"]
+        })
+
+        break
+
+    filename = f"{data_dir}/{page_number}.csv"
+    save_to_csv(filename, data_rows)
+
+    break
+
+print("END")
