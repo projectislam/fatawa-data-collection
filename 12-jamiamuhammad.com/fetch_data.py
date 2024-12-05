@@ -8,6 +8,16 @@ data_dir = "./data"
 
 os.makedirs(data_dir, exist_ok=True)
 
+def save_to_csv(filename, data_rows):
+    with open(filename, mode='w', newline='', encoding='utf-8') as csv_file:
+        fieldnames = data_rows[0]
+        writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+        writer.writeheader()
+        for data_row in data_rows:
+                writer.writerow(data_row)
+
+    print("->> Questions saved in", filename)
+
 def get_page_link(page_number):
     if page_number == 1:
         return f"{base_url}/new_questions"
@@ -83,19 +93,12 @@ for page_number in range(start_page, total_pages + 1):
             "question_html": content["question_html"],
             "answer_html": content["answer_html"],
             "html_container": content["html_container"],
-            "dar_ul_ifta": "jamiamuhammad"
+            "dar_ul_ifta": "jamiamuhammad.com"
         })
 
 
     filename = f"{data_dir}/{page_number}.csv"
-    with open(filename, mode='w', newline='', encoding='utf-8') as csv_file:
-        fieldnames = data_rows[0]
-        writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
-        writer.writeheader()
-        for data_row in data_rows:
-                writer.writerow(data_row)
-
-    print("->> Questions saved in", filename)
+    save_to_csv(filename, data_rows)
 
 
 print("END")
