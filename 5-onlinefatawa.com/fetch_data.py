@@ -149,12 +149,9 @@ for page_number in range(start_page, total_pages + 1):
             "html_container": content["html_container"]
         })
 
-        break
-
     filename = f"{data_dir}/{page_number}.csv"
     save_to_csv(filename, data_rows)
 
-    break
 
 print("END")
 
