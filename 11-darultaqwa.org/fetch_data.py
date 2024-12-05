@@ -8,6 +8,16 @@ data_dir = "./data"
 
 os.makedirs(data_dir, exist_ok=True)
 
+def save_to_csv(filename, data_rows):
+    with open(filename, mode='w', newline='', encoding='utf-8') as csv_file:
+        fieldnames = data_rows[0]
+        writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+        writer.writeheader()
+        for data_row in data_rows:
+                writer.writerow(data_row)
+
+    print("->> Questions saved in", filename)
+
 def get_topic_list():
     response = requests.get(base_url)
     soup = BeautifulSoup(response.text, "html.parser")
@@ -144,18 +154,11 @@ for topic_index, topic in enumerate(topics, 1):
             "category_lvl_1": content["category_lvl_1"],
             "category_lvl_2": content["category_lvl_2"],
             "html_container": content["html_container"],
-            "dar_ul_ifta": "darultaqwa"
+            "dar_ul_ifta": "darultaqwa.org"
         })
 
     filename = f"{data_dir}/{topic_index}.csv"
-    with open(filename, mode='w', newline='', encoding='utf-8') as csv_file:
-        fieldnames = data_rows[0]
-        writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
-        writer.writeheader()
-        for data_row in data_rows:
-                writer.writerow(data_row)
-
-    print("->> Questions saved in", filename)
+    save_to_csv(filename, data_rows)
 
 
 print("END")
