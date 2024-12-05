@@ -3,6 +3,17 @@ import os
 import csv
 from bs4 import BeautifulSoup
 
+def save_to_csv(filename, data_rows):
+    with open(filename, mode='w', newline='', encoding='utf-8') as csv_file:
+        fieldnames = data_rows[0]
+        writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+        writer.writeheader()
+        for data_row in data_rows:
+                writer.writerow(data_row)
+
+    print("->> Questions saved in", filename)
+
+
 def get_page_number(page):
     if page == 0:
         return ""
@@ -53,6 +64,8 @@ def get_question_detail(question):
     response = requests.get(link)
     soup = BeautifulSoup(response.text, "html.parser")
 
+    html_container = soup.select_one("div.container-fluid.contain > div.row > div.col-md-8")
+
     date_ele = soup.select_one("body > div > div.container-fluid.contain > div > div.col-md-8 > div.card > div > div > div:nth-child(1) > div.txt.robotolight.mobile")
     date = date_ele.get_text()
 
@@ -63,9 +76,9 @@ def get_question_detail(question):
     category = category_ele.get_text().strip()
     category_parts = category.split("/")
 
-    kitab = category_parts[0]
-    bab = category_parts[1]
-    fasal = category_parts[2]
+    category_lvl_1 = category_parts[0]
+    category_lvl_2 = category_parts[1]
+    category_lvl_3 = category_parts[2]
 
     question_ele = soup.select_one("body > div > div.container-fluid.contain > div > div.col-md-8 > p:nth-child(5)")
     question_html = str(question_ele)
@@ -82,12 +95,13 @@ def get_question_detail(question):
         answer_html += str(sibling)
 
     return {
-        "date": date,
-        "kitab": kitab,
-        "bab": bab,
-        "fasal": fasal,
+        "answer_html": answer_html,
         "question_html": question_html,
-        "answer_html": answer_html
+        "date": date,
+        "category_lvl_1": category_lvl_1,
+        "category_lvl_2": category_lvl_2,
+        "category_lvl_3": category_lvl_3,
+        "html_container": html_container
     }
 
 
@@ -101,14 +115,18 @@ os.makedirs(data_dir, exist_ok=True)
 total_fatawa = 13950
 fatawa_per_page = 150
 total_pages = int(total_fatawa / 150)
+start_page = 0 # start from 0
 
-for page_number in range(24, total_pages + 1):
+for page_number in range(start_page, total_pages + 1):
     print("Page number", page_number)
 
     num = get_page_number(page_number)
     page_link = f"{base_url}/{num}"
 
     questions = get_question_list(page_link)
+    total_questions = len(questions)
+
+    print(total_questions, "total questions found on", page_link)
 
     data_rows = []
 
@@ -118,27 +136,25 @@ for page_number in range(24, total_pages + 1):
         content = get_question_detail(question)
 
         data_rows.append({
-            "issued_at": content["date"],
             "link": question["link"],
             "title": question["title"],
             "question": content["question_html"],
             "answer": content["answer_html"],
+            "issued_at": content["date"],
             "fatwa_number": question["fatwa_num"],
-            "dar_ul_ifta": "binoria",
-            "kitab": content["kitab"],
-            "bab": content["bab"],
-            "fasal": content["fasal"]
+            "dar_ul_ifta": "onlinefatawa.com",
+            "category_lvl_1": content["category_lvl_1"],
+            "category_lvl_2": content["category_lvl_2"],
+            "category_lvl_3": content["category_lvl_3"],
+            "html_container": content["html_container"]
         })
 
+        break
+
     filename = f"{data_dir}/{page_number}.csv"
-    with open(filename, mode='w', newline='', encoding='utf-8') as csv_file:
-        fieldnames = data_rows[0]
-        writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
-        writer.writeheader()
-        for data_row in data_rows:
-                writer.writerow(data_row)
-    
-    print("--> Save", filename)
+    save_to_csv(filename, data_rows)
+
+    break
 
 print("END")
 

@@ -184,5 +184,6 @@ for topic_number, topic in enumerate(topics, 1):
     
     break
 
-# Close browser
+
+print("END")
 driver.quit()
