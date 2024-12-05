@@ -62,6 +62,7 @@ def get_question_detail(question):
 
         if jawab_text in text:
             answer_start = True
+            continue
 
         if answer_start:
             answer_html += str(para)
