@@ -52,7 +52,7 @@ def get_question_detail(question):
     soup = BeautifulSoup(response.text, "html.parser")
 
     html_ele = soup.select_one("div.gdlr-core-pbf-element > div.gdlr-core-text-box-item > div.gdlr-core-text-box-item-content")
-    container_ele = html_ele.select_one("h4")
+    container_ele = html_ele.select_one("h4") or html_ele.select_one("h3")  or html_ele.select_one("h2")  or html_ele.select_one("h1")
     paras = container_ele.find_next_siblings()
 
     question_html = ""
@@ -80,7 +80,7 @@ def get_question_detail(question):
         
 
 total_pages = 132
-start_page = 1
+start_page = 65
 
 for page_number in range(start_page, total_pages + 1):
     link = f"{base_url}/{page_number}"

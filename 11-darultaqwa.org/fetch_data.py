@@ -87,10 +87,10 @@ def get_question_detail(question):
     date_ele = html_ele.select_one("div.blog-detail-inf ul > li:nth-child(2)")
     topic_ele = html_ele.select_one("div.blog-detail-inf ul > li:nth-child(3)")
 
-    fatwa_number = fatwa_number_ele.get_text().strip().split(":")[1]
-    date = date_ele.get_text().strip().split(":")[1]
-    category_lvl_1 = topic_ele.select_one("a:nth-child(2)").get_text().strip()
-    category_lvl_2 = topic_ele.select_one("a:nth-child(3)").get_text().strip()
+    fatwa_number = fatwa_number_ele.get_text().strip().split(":")[1] if fatwa_number_ele.get_text().strip() else ""
+    date = date_ele.get_text().strip().split(":")[1] if date_ele.get_text() else ""
+    category_lvl_1 = topic_ele.select_one("a:nth-child(2)").get_text().strip() if topic_ele.select_one("a:nth-child(2)") else ""
+    category_lvl_2 = topic_ele.select_one("a:nth-child(3)").get_text().strip() if topic_ele.select_one("a:nth-child(3)") else ""
 
     container = html_ele.select_one("div.blog-detail-desc > h3")
     paras = container.find_next_siblings()
