@@ -130,6 +130,9 @@ total_topics = len(topics)
 print(total_topics, "total topics found")
 
 for topic_index, topic in enumerate(topics, 1):
+    if topic_index < 36:
+        continue
+
     print(f"{topic_index}/{total_topics}", topic['link'])
 
     get_topic_pages(topic_index, topic)

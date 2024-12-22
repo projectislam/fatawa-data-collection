@@ -53,6 +53,23 @@ def get_topic_list():
 
     return topics
 
+def get_total_pages(topic):
+    link = topic["link"]
+    response = requests.get(link)
+    soup = BeautifulSoup(response.text, "html.parser")
+
+    last_link = soup.select_one("div.pagination-wrap > ul.pagination > li:nth-last-child(2) > a")
+
+    return int(last_link.get_text().strip())
+
+def get_page_link(page_number, topic):
+    link = topic["link"]
+
+    if page_number == 1:
+        return link
+    
+    return f"{link}page/{page_number}"
+        
 
 def get_question_list(topic):
     link = topic["link"]
