@@ -2,11 +2,15 @@ import os
 import csv
 import requests
 from bs4 import BeautifulSoup
+import cloudscraper
+import time
 
 base_url = "https://darultaqwa.org/darulifta/"
 data_dir = "./data"
 
 os.makedirs(data_dir, exist_ok=True)
+
+scraper = cloudscraper.create_scraper()
 
 def save_to_csv(filename, data_rows):
     with open(filename, mode='w', newline='', encoding='utf-8') as csv_file:
@@ -19,7 +23,15 @@ def save_to_csv(filename, data_rows):
     print("->> Questions saved in", filename)
 
 def get_topic_list():
-    response = requests.get(base_url)
+    try:
+        response = requests.get(base_url)
+    except Exception as e:
+        try:
+            response = scraper.get(base_url)
+        except Exception as e2:
+            time.sleep(1)
+            response = scraper.get("http://darultaqwa.org/darulifta/")
+
     soup = BeautifulSoup(response.text, "html.parser")
 
     menu_items = soup.select("nav > ul.elementor-nav-menu > li")
@@ -55,7 +67,15 @@ def get_topic_list():
 
 def get_total_pages(topic):
     link = topic["link"]
-    response = requests.get(link)
+    try:
+        response = requests.get(link)
+    except Exception as e:
+        try:
+            response = scraper.get(link)
+        except Exception as e2:
+            link = link.replace("https", "http")
+            response = scraper.get(link)
+        
     soup = BeautifulSoup(response.text, "html.parser")
 
     last_link = soup.select_one("div.pagination-wrap > ul.pagination > li:nth-last-child(2) > a")
@@ -71,12 +91,19 @@ def get_page_link(page_number, topic):
     return f"{link}page/{page_number}"
         
 
-def get_question_list(topic):
-    link = topic["link"]
-    response = requests.get(link)
+def get_question_list(page_link):
+    try:
+        response = requests.get(page_link)
+    except Exception as e:
+        try:
+            response = scraper.get(page_link)
+        except Exception as e2:
+            page_link = page_link.replace("https",  "http")
+            response = scraper.get(page_link)
+
     soup = BeautifulSoup(response.text, "html.parser")
 
-    items = soup.select("div.row > div.content-section > div.blg-pst-wrp")
+    items = soup.select("div.row > div.content-section > div.blg-pst-wrp > div.post")
 
     questions = []
 
@@ -95,7 +122,12 @@ def get_question_list(topic):
 
 def get_question_detail(question):
     link = question["link"]
-    response = requests.get(link)
+    
+    try:
+        response = requests.get(link)
+    except Exception as e:
+        response = scraper.get(link)
+
     soup = BeautifulSoup(response.text, "html.parser")
 
     html_ele = soup.select_one("div.blog-detail-wrp > div.row div.post > div.blog-detail")
@@ -109,11 +141,16 @@ def get_question_detail(question):
     category_lvl_1 = topic_ele.select_one("a:nth-child(2)").get_text().strip() if topic_ele.select_one("a:nth-child(2)") else ""
     category_lvl_2 = topic_ele.select_one("a:nth-child(3)").get_text().strip() if topic_ele.select_one("a:nth-child(3)") else ""
 
-    container = html_ele.select_one("div.blog-detail-desc > h3")
-    paras = container.find_next_siblings()
+    container = html_ele.select_one("div.blog-detail-desc h3")
 
     question_html = ""
     answer_html = ""
+
+    if not container:
+        container = html_ele.select_one("div.blog-detail-desc p")
+        question_html += str(container)
+
+    paras = container.find_next_siblings()
 
     answer_start = False
 
@@ -129,6 +166,10 @@ def get_question_detail(question):
             answer_html += str(para)
         else:
             question_html += str(para)
+
+    if not answer_html:
+        answer_html = question_html
+        question_html = ""
 
     
     return {
@@ -147,35 +188,50 @@ total_topics = len(topics)
 print(total_topics, "total topics found")
 
 for topic_index, topic in enumerate(topics, 1):
+    if topic_index < 10:
+        continue
+
     print(f"{topic_index}/{total_topics}", topic["link"])
 
-    questions = get_question_list(topic)
-    total_questions = len(questions)
+    total_pages = get_total_pages(topic)
 
-    print(total_questions, "total questions found")
+    print(total_pages, "total pages found")
 
-    data_rows = []
+    for page_number in range(1, total_pages + 1):
+        if topic_index == 10 and page_number < 136:
+            continue
 
-    for question_index, question in enumerate(questions, 1):
-        print(f"{question_index}/{total_questions}", question["link"])
+        page_link = get_page_link(page_number, topic)
 
-        content = get_question_detail(question)
+        print("Fetching page...", page_link)
 
-        data_rows.append({
-            "link": question["link"],
-            "title": question["title"],
-            "question_html": content["question_html"],
-            "answer_html": content["answer_html"],
-            "fatwa_number": content["fatwa_number"],
-            "issued_at": content["date"],
-            "category_lvl_1": content["category_lvl_1"],
-            "category_lvl_2": content["category_lvl_2"],
-            "html_container": content["html_container"],
-            "dar_ul_ifta": "darultaqwa.org"
-        })
+        questions = get_question_list(page_link)
+        total_questions = len(questions)
 
-    filename = f"{data_dir}/{topic_index}.csv"
-    save_to_csv(filename, data_rows)
+        print(total_questions, "total questions found")
+
+        data_rows = []
+
+        for question_index, question in enumerate(questions, 1):
+            print(f"Topic({topic_index}/{total_topics}) Page({page_number}/{total_pages}) Q({question_index}/{total_questions})", question["link"])
+
+            content = get_question_detail(question)
+
+            data_rows.append({
+                "link": question["link"],
+                "title": question["title"],
+                "question_html": content["question_html"],
+                "answer_html": content["answer_html"],
+                "fatwa_number": content["fatwa_number"],
+                "issued_at": content["date"],
+                "category_lvl_1": content["category_lvl_1"],
+                "category_lvl_2": content["category_lvl_2"],
+                "html_container": content["html_container"],
+                "dar_ul_ifta": "darultaqwa.org"
+            })
+
+        filename = f"{data_dir}/{topic_index}-{page_number}.csv"
+        save_to_csv(filename, data_rows)
 
 
 print("END")
