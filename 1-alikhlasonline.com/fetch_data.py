@@ -78,7 +78,7 @@ def get_question_detail(question):
 
 
 total_pages = 224
-start_page = 1
+start_page = 149
 
 for page_number in range(start_page, total_pages + 1):
     page_link = f"{base_url}/allquestions.aspx?lang=1&page={page_number}"

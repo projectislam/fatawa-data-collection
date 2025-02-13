@@ -105,7 +105,7 @@ def get_question_detail(question):
     }
 
 total_pages = 1248
-start_page = 1
+start_page = 1067
 
 for page_number in range(start_page, total_pages + 1):
     page_link = f"{base_url}/new-questions/page/{page_number}"
@@ -138,11 +138,9 @@ for page_number in range(start_page, total_pages + 1):
             "html_container": content["html_container"]
         })
 
-        break
 
     filename = f"{data_dir}/{page_number}.csv"
     save_to_csv(filename, data_rows)
 
-    break
 
 print("END")

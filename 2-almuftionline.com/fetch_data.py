@@ -120,7 +120,7 @@ def get_question_detail(question):
 
 
 total_pages = 1119
-start_page = 1
+start_page = 112
 
 for page_number in range(start_page, total_pages + 1):
     page_link = f"{base_url}/page/{page_number}"

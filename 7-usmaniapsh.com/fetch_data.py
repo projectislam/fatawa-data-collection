@@ -4,7 +4,7 @@ import csv
 import time
 from bs4 import BeautifulSoup
 
-base_url = "https://usmaniapsh.com/new_questions"
+base_url = "https://usmaniapsh.com"
 data_dir = "./data"
 
 os.makedirs(data_dir, exist_ok=True)
@@ -21,9 +21,11 @@ def save_to_csv(filename, data_rows):
 
 def get_page_number(page):
     if page == 0:
-        return ""
+        return "/new_questions"
     
-    return page * 30
+    page_num = page * 30
+
+    return f"/darulifta/new_questions/{page_num}"
 
 def get_question_list(page_link):
     response = requests.get(page_link)
@@ -104,7 +106,7 @@ def get_question_detail(question):
 
 
 total_pages = 148
-start_page = 0 # start from 0
+start_page = 1 # start from 0
 
 for page in range(start_page, total_pages + 1):
     page_number = get_page_number(page)
