@@ -1,0 +1,48 @@
+import sqlite3
+
+# Database file
+DB_FILE = "fatawa.db"
+
+# Directory containing CSV files
+CSV_DIR = "../1-alikhlasonline.com/data/"
+
+# Define table schema
+CREATE_TABLE_QUERY = """
+CREATE TABLE IF NOT EXISTS fatawa (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    fatwa_number TEXT,
+    link TEXT,
+    title TEXT,
+    question TEXT,
+    answer TEXT,
+    category_level_1 TEXT,
+    category_level_2 TEXT,
+    category_level_3 TEXT,
+    dar_ul_ifta TEXT,
+    dar_ul_ifta_id INTEGER,
+    fatwa_issued_at TEXT,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+);
+"""
+
+# Enable Full-Text Search (FTS5) on title column
+CREATE_FTS_TABLE_QUERY = """
+CREATE VIRTUAL TABLE IF NOT EXISTS fatawa_fts USING fts5(title, content='fatawa', content_rowid='id');
+"""
+
+# Main script
+def main():
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+
+    # Create tables if they don't exist
+    cursor.execute(CREATE_TABLE_QUERY)
+    cursor.execute(CREATE_FTS_TABLE_QUERY)
+    conn.commit()
+
+    conn.close()
+    print("Database table created")
+
+if __name__ == "__main__":
+    main()
