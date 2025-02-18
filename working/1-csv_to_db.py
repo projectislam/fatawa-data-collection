@@ -58,6 +58,9 @@ def process_csv(file_path, conn):
         question = row["question_html"]
         answer = row["answer_html"]
         fatwa_issued_at = standardize_date(row["issued_at"])
+        category_level_1 = ""
+        category_level_2 = ""
+        category_level_3 = ""
         dar_ul_ifta = 1
 
         cursor = conn.cursor()
@@ -66,7 +69,7 @@ def process_csv(file_path, conn):
                                category_level_1, category_level_2, category_level_3, 
                                fatwa_issued_at, dar_ul_ifta) 
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """, (fatwa_number, link, title, question, answer, "", "", "", fatwa_issued_at, dar_ul_ifta))
+        """, (fatwa_number, link, title, question, answer, category_level_1, category_level_2, category_level_3, fatwa_issued_at, dar_ul_ifta))
         
         # Get the last inserted row ID
         row_id = cursor.lastrowid
