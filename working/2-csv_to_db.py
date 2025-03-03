@@ -21,7 +21,7 @@ def standardize_date(date_str):
     try:
         return datetime.strptime(date_str, "%b %d, %Y").strftime("%Y-%m-%d")
     except ValueError:
-        return ""
+        return date_str
 
 # Function to process a single CSV file
 def process_csv(file_path, conn):

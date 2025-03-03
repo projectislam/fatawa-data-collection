@@ -23,7 +23,7 @@ def standardize_date(date_str):
         date_str = re.sub(r'(\d+)(st|nd|rd|th)', r'\1', date_str)
         return datetime.strptime(date_str, "%B %d, %Y").strftime("%Y-%m-%d")
     except ValueError:
-        return ""
+        return date_str
 
 # Function to process a single CSV file
 def process_csv(file_path, conn):

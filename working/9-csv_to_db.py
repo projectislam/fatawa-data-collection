@@ -30,7 +30,7 @@ def standardize_date(date_str):
         english_month = urdu_to_english_months.get(urdu_month, "")
         return datetime.strptime(f"{day} {english_month} {year}", "%d %B %Y").strftime("%Y-%m-%d")
     except ValueError:
-        return ""
+        return date_str
 
 # Function to process a single CSV file
 def process_csv(file_path, conn):
