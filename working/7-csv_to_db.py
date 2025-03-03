@@ -37,7 +37,7 @@ def process_csv(file_path, conn):
         category_level_1 = row["category_lvl_1"]
         category_level_2 = row["category_lvl_2"]
         category_level_3 = row["category_lvl_3"]
-        dar_ul_ifta = ""
+        dar_ul_ifta = "دارالا فتاء جامعہ عثمانیہ پشاور"
         dar_ul_ifta_id = 7
 
         cursor = conn.cursor()
