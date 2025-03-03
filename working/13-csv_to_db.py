@@ -29,7 +29,7 @@ def process_csv(file_path, conn):
 
     for _, row in df.iterrows():
         fatwa_number = row["fatwa_number"]
-        link = "TODO" # TODO: generate link from file number
+        link = "https://darulifta.dud.edu.in"
         title = clean_html(row["title"])
         question = ""
         answer = row["answer_html"]
