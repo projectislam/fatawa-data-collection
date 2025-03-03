@@ -10,30 +10,6 @@ DB_FILE = "fatawa.db"
 # Directory containing CSV files
 CSV_DIR = "../3-banuri.edu.pk/data/"
 
-# Define table schema
-CREATE_TABLE_QUERY = """
-CREATE TABLE IF NOT EXISTS fatawa (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    fatwa_number TEXT,
-    link TEXT,
-    title TEXT,
-    question TEXT,
-    answer TEXT,
-    category_level_1 TEXT,
-    category_level_2 TEXT,
-    category_level_3 TEXT,
-    fatwa_issued_at TEXT,
-    dar_ul_ifta INTEGER DEFAULT 1,
-    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-    updated_at TEXT DEFAULT CURRENT_TIMESTAMP
-);
-"""
-
-# Enable Full-Text Search (FTS5) on title column
-CREATE_FTS_TABLE_QUERY = """
-CREATE VIRTUAL TABLE IF NOT EXISTS fatawa_fts USING fts5(title, content='fatawa', content_rowid='id');
-"""
-
 # Function to clean HTML content
 def clean_html(html):
     if not isinstance(html, str):
@@ -61,15 +37,16 @@ def process_csv(file_path, conn):
         category_level_1 = row["category_lvl_1"]
         category_level_2 = row["category_lvl_2"]
         category_level_3 = row["category_lvl_3"]
-        dar_ul_ifta = 3
+        dar_ul_ifta = ""
+        dar_ul_ifta_id = 3
 
         cursor = conn.cursor()
         cursor.execute("""
             INSERT INTO fatawa (fatwa_number, link, title, question, answer, 
                                category_level_1, category_level_2, category_level_3, 
-                               fatwa_issued_at, dar_ul_ifta) 
+                               fatwa_issued_at, dar_ul_ifta, dar_ul_ifta_id) 
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """, (fatwa_number, link, title, question, answer, category_level_1, category_level_2, category_level_3, fatwa_issued_at, dar_ul_ifta))
+        """, (fatwa_number, link, title, question, answer, category_level_1, category_level_2, category_level_3, fatwa_issued_at, dar_ul_ifta, dar_ul_ifta_id))
         
         # Get the last inserted row ID
         row_id = cursor.lastrowid
@@ -82,13 +59,7 @@ def process_csv(file_path, conn):
 # Main script
 def main():
     conn = sqlite3.connect(DB_FILE)
-    cursor = conn.cursor()
-
-    # Create tables if they don't exist
-    cursor.execute(CREATE_TABLE_QUERY)
-    cursor.execute(CREATE_FTS_TABLE_QUERY)
-    conn.commit()
-
+    
     # Process each CSV file
     for file_name in os.listdir(CSV_DIR):
         if file_name.endswith(".csv"):

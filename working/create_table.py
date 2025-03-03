@@ -3,9 +3,6 @@ import sqlite3
 # Database file
 DB_FILE = "fatawa.db"
 
-# Directory containing CSV files
-CSV_DIR = "../1-alikhlasonline.com/data/"
-
 # Define table schema
 CREATE_TABLE_QUERY = """
 CREATE TABLE IF NOT EXISTS fatawa (
