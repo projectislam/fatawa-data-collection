@@ -40,7 +40,6 @@ def process_csv(file_path, conn):
         fatwa_number = ""
         link = row["link"]
         title = clean_html(row["title"])
-        # TODO: sometime question and answer html not exist fix this
         question = row["question_html"]
         answer = row["answer_html"]
         fatwa_issued_at = standardize_date(row["issued_at"])
