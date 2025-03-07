@@ -34,8 +34,8 @@ def process_csv(file_path, conn):
         question = row["question"]
         answer = row["answer"]
         fatwa_issued_at = standardize_date(row["issued_at"])
-        category_level_1 = row["category_lvl_1"]
-        category_level_2 = row["category_lvl_2"]
+        category_level_1 = row["category_level_1"]
+        category_level_2 = row["category_level_2"]
         category_level_3 = ""
         dar_ul_ifta = "دارالعلوم دیوبند انڈیا"
         dar_ul_ifta_id = 4

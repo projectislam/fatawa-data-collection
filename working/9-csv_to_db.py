@@ -9,7 +9,7 @@ from datetime import datetime
 DB_FILE = "fatawa.db"
 
 # Directory containing CSV files
-CSV_DIR = "../9-usmanidarulifta.in/data/"
+CSV_DIR = "../9-usmanidarulifta.in/process_data/"
 
 # Function to clean HTML content
 def clean_html(html):

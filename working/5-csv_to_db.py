@@ -14,6 +14,7 @@ CSV_DIR = "../5-onlinefatawa.com/data/"
 def clean_html(html):
     if not isinstance(html, str):
         return ""
+    html = html.replace("/", "&#47;")
     return BeautifulSoup(html, "html.parser").get_text()
 
 # Function to standardize date format

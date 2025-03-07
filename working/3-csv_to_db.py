@@ -14,6 +14,7 @@ CSV_DIR = "../3-banuri.edu.pk/data/"
 def clean_html(html):
     if not isinstance(html, str):
         return ""
+    html = html.replace("/", "&#47;")
     return BeautifulSoup(html, "html.parser").get_text()
 
 # Function to standardize date format
@@ -30,7 +31,7 @@ def process_csv(file_path, conn):
     for _, row in df.iterrows():
         fatwa_number = row["fatwa_number"] if row["fatwa_number"].isdigit() else ""
         link = row["link"]
-        title = clean_html(row["title"])
+        title = clean_html(str(row["title"]))
         question = row["question_html"]
         answer = row["answer_html"]
         fatwa_issued_at = standardize_date(row["issued_at"])
@@ -45,7 +46,7 @@ def process_csv(file_path, conn):
             INSERT INTO fatawa (fatwa_number, link, title, question, answer, 
                                category_level_1, category_level_2, category_level_3, 
                                fatwa_issued_at, dar_ul_ifta, dar_ul_ifta_id) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (fatwa_number, link, title, question, answer, category_level_1, category_level_2, category_level_3, fatwa_issued_at, dar_ul_ifta, dar_ul_ifta_id))
         
         # Get the last inserted row ID
