@@ -3,3 +3,5 @@ fatawa.db
 .DS_Store
 
 working/fatawa.db
+working/complete.db
+working/complete_fts.db

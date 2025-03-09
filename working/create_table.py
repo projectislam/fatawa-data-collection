@@ -23,9 +23,11 @@ CREATE TABLE IF NOT EXISTS fatawa (
 );
 """
 
-# Enable Full-Text Search (FTS5) on title column
-CREATE_FTS_TABLE_QUERY = """
-CREATE VIRTUAL TABLE IF NOT EXISTS fatawa_fts USING fts5(title, content='fatawa', content_rowid='id');
+CREATE_FAV_TABLE_QUERY = """
+CREATE TABLE IF NOT EXISTS favorites (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    fatwa_id INTEGER
+);
 """
 
 # Main script
@@ -35,7 +37,7 @@ def main():
 
     # Create tables if they don't exist
     cursor.execute(CREATE_TABLE_QUERY)
-    cursor.execute(CREATE_FTS_TABLE_QUERY)
+    cursor.execute(CREATE_FAV_TABLE_QUERY)
     conn.commit()
 
     conn.close()

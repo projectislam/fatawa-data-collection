@@ -14,6 +14,7 @@ CSV_DIR = "../13-darulifta.dud.edu.in/data/"
 def clean_html(html):
     if not isinstance(html, str):
         return ""
+    html = html.replace("/", "&#47;")
     return BeautifulSoup(html, "html.parser").get_text()
 
 # Function to standardize date format
@@ -49,10 +50,10 @@ def process_csv(file_path, conn):
         """, (fatwa_number, link, title, question, answer, category_level_1, category_level_2, category_level_3, fatwa_issued_at, dar_ul_ifta, dar_ul_ifta_id))
         
         # Get the last inserted row ID
-        row_id = cursor.lastrowid
+        # row_id = cursor.lastrowid
 
         # Insert into FTS table
-        cursor.execute("INSERT INTO fatawa_fts (rowid, title) VALUES (?, ?)", (row_id, title))
+        # cursor.execute("INSERT INTO fatawa_fts (rowid, title) VALUES (?, ?)", (row_id, title))
 
         conn.commit()
 
@@ -60,13 +61,20 @@ def process_csv(file_path, conn):
 def main():
     conn = sqlite3.connect(DB_FILE)
 
+    count = 0
+
     # Process each CSV file
     for file_name in os.listdir(CSV_DIR):
         if file_name.endswith(".csv"):
             file_path = os.path.join(CSV_DIR, file_name)
             print(f"Processing: {file_name}")
             process_csv(file_path, conn)
-        exit()
+        
+            count = count + 1
+
+            if count == 10:
+                pass
+                # exit(1)
 
     conn.close()
     print("Data import complete!")
