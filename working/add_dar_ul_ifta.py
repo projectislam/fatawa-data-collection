@@ -26,16 +26,10 @@ def main():
 
     dar_ul_ifta_list = [
         {
-            "name": "دارالافتاء، جامعہ دارالعلوم کراچی",
-            "website": "https://www.suffahpk.com/category/fatawa-darul-uloom-karachi",
+            "name": "دارالافتاء الاخلاص",
+            "website": "https://alikhlasonline.com",
             "logo_path": "",
-            "list_order": 1
-        },
-        {
-            "name": "جامعہ علوم اسلامیہ علامہ محمد یوسف بنوری ٹاؤن",
-            "website": "https://www.banuri.edu.pk",
-            "logo_path": "",
-            "list_order": 2
+            "list_order": 13
         },
         {
             "name": "دار الافتاء جامعۃ الرشید،کراچی",
@@ -44,23 +38,28 @@ def main():
             "list_order": 3
         },
         {
+            "name": "جامعہ علوم اسلامیہ علامہ محمد یوسف بنوری ٹاؤن",
+            "website": "https://www.banuri.edu.pk",
+            "logo_path": "",
+            "list_order": 2
+        },
+        {
             "name": "دارالعلوم دیوبند انڈیا",
             "website": "https://darulifta-deoband.com",
             "logo_path": "",
             "list_order": 4
         },
-        
-        {
-            "name": "دار العلوم وقف ديوبند انڈیا",
-            "website": "https://darulifta.dud.edu.in",
-            "logo_path": "",
-            "list_order": 5
-        },
         {
             "name": "دار الافتاء جامعه بنوریه عالمیه",
             "website": "https://onlinefatawa.com",
             "logo_path": "",
-            "list_order": 6
+            "list_order": 5
+        },
+        {
+            "name": "دارالافتاء، جامعہ دارالعلوم کراچی",
+            "website": "https://www.suffahpk.com/category/fatawa-darul-uloom-karachi",
+            "logo_path": "",
+            "list_order": 1
         },
         {
             "name": "دارالا فتاء جامعہ عثمانیہ پشاور",
@@ -99,12 +98,11 @@ def main():
             "list_order": 12
         },
         {
-            "name": "دارالافتاء الاخلاص",
-            "website": "https://alikhlasonline.com",
+            "name": "دار العلوم وقف ديوبند انڈیا",
+            "website": "https://darulifta.dud.edu.in",
             "logo_path": "",
-            "list_order": 13
-        },
-        
+            "list_order": 6
+        }
     ]
 
     for dar_ul_ifta in dar_ul_ifta_list:
@@ -121,7 +119,7 @@ def main():
         conn.commit()
 
     conn.close()
-    print("Dar ul ifta added in table")
+    print("Database table created")
 
 if __name__ == "__main__":
     main()
