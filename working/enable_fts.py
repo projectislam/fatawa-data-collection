@@ -12,7 +12,8 @@ cursor.execute("""
     CREATE VIRTUAL TABLE IF NOT EXISTS fatawa_fts USING fts5(
         title, question, answer,
         content='fatawa',
-        content_rowid='id'
+        content_rowid='id',
+        tokenize='unicode61 remove_diacritics 1'
     );
 """)
 

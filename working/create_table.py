@@ -17,16 +17,10 @@ CREATE TABLE IF NOT EXISTS fatawa (
     category_level_3 TEXT,
     dar_ul_ifta TEXT,
     dar_ul_ifta_id INTEGER,
+    is_favorite INTEGER NOT NULL CHECK (is_favorite IN (0,1)) DEFAULT 0,
     fatwa_issued_at TEXT,
     created_at TEXT DEFAULT CURRENT_TIMESTAMP,
     updated_at TEXT DEFAULT CURRENT_TIMESTAMP
-);
-"""
-
-CREATE_FAV_TABLE_QUERY = """
-CREATE TABLE IF NOT EXISTS favorites (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    fatwa_id INTEGER
 );
 """
 
@@ -37,7 +31,6 @@ def main():
 
     # Create tables if they don't exist
     cursor.execute(CREATE_TABLE_QUERY)
-    cursor.execute(CREATE_FAV_TABLE_QUERY)
     conn.commit()
 
     conn.close()

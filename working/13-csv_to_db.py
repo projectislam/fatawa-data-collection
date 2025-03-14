@@ -1,4 +1,5 @@
 import os
+import re
 import sqlite3
 import pandas as pd
 from bs4 import BeautifulSoup
@@ -17,6 +18,12 @@ def clean_html(html):
     html = html.replace("/", "&#47;")
     return BeautifulSoup(html, "html.parser").get_text()
 
+def clear_style(html):
+    if not html:
+        return html
+    
+    return re.sub(r'text-align:\s*right;?', '', html, flags=re.IGNORECASE)
+
 # Function to standardize date format
 def standardize_date(date_str):
     try:
@@ -33,7 +40,7 @@ def process_csv(file_path, conn):
         link = "https://darulifta.dud.edu.in"
         title = clean_html(row["title"])
         question = ""
-        answer = row["answer_html"]
+        answer = clear_style(row["answer_html"])
         fatwa_issued_at = ""
         category_level_1 = row["category_lvl_1"]
         category_level_2 = ""
@@ -73,8 +80,8 @@ def main():
             count = count + 1
 
             if count == 10:
-                pass
-                # exit(1)
+                # pass
+                exit(1)
 
     conn.close()
     print("Data import complete!")
