@@ -119,7 +119,7 @@ def main():
         conn.commit()
 
     conn.close()
-    print("Database table created")
+    print("Dar ul ifta added in databse")
 
 if __name__ == "__main__":
     main()

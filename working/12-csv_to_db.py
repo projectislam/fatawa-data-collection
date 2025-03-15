@@ -22,7 +22,7 @@ def clear_style(html):
     if not html:
         return html
     
-    return re.sub(r'text-align:\s*right;?', '', html, flags=re.IGNORECASE)
+    return re.sub(r'<(\w+)(\s+[^>]*)?>', r'<\1>', html)
 
 # Function to standardize date format
 def standardize_date(date_str):
