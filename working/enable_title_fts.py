@@ -10,7 +10,7 @@ cursor = conn.cursor()
 # 1️⃣ Create FTS5 Virtual Table (External Content Mode to Reduce Size)
 cursor.execute("""
     CREATE VIRTUAL TABLE IF NOT EXISTS fatawa_fts USING fts5(
-        title, question, answer,
+        title,
         content='fatawa',
         content_rowid='id'
     );
