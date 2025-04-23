@@ -11,10 +11,13 @@ with open(input_file, 'r', encoding='utf-8') as infile, open(output_file, 'w', n
 
     kept_count = 0
     total = 0
+    id = 0
 
     for row in reader:
         total += 1
         if row['question'].strip() and row['answer'].strip():
+            id = id + 1
+            row['id'] = id
             writer.writerow(row)
             kept_count += 1
 
