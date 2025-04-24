@@ -49,20 +49,27 @@ def process_csv(file_path, conn):
         dar_ul_ifta_id = 12
 
         cursor = conn.cursor()
+
         cursor.execute("""
-            INSERT INTO fatawa (fatwa_number, link, title, question, answer, 
-                               category_level_1, category_level_2, category_level_3, 
-                               fatwa_issued_at, dar_ul_ifta, dar_ul_ifta_id) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """, (fatwa_number, link, title, question, answer, category_level_1, category_level_2, category_level_3, fatwa_issued_at, dar_ul_ifta, dar_ul_ifta_id))
-        
-        # Get the last inserted row ID
-        # row_id = cursor.lastrowid
+            SELECT COUNT(*) FROM fatawa WHERE title = ? AND dar_ul_ifta_id = ?
+        """, (title, dar_ul_ifta_id))
+                
+        if cursor.fetchone()[0] == 0:
 
-        # Insert into FTS table
-        # cursor.execute("INSERT INTO fatawa_fts (rowid, title) VALUES (?, ?)", (row_id, title))
+            cursor.execute("""
+                INSERT INTO fatawa (fatwa_number, link, title, question, answer, 
+                                category_level_1, category_level_2, category_level_3, 
+                                fatwa_issued_at, dar_ul_ifta, dar_ul_ifta_id) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (fatwa_number, link, title, question, answer, category_level_1, category_level_2, category_level_3, fatwa_issued_at, dar_ul_ifta, dar_ul_ifta_id))
+            
+            # Get the last inserted row ID
+            # row_id = cursor.lastrowid
 
-        conn.commit()
+            # Insert into FTS table
+            # cursor.execute("INSERT INTO fatawa_fts (rowid, title) VALUES (?, ?)", (row_id, title))
+
+            conn.commit()
 
 # Main script
 def main():
