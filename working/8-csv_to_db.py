@@ -84,8 +84,8 @@ def main():
             count = count + 1
 
             if count == 10:
-                pass
-                # exit(1)
+                # pass
+                exit(1)
 
     conn.close()
     print("Data import complete!")

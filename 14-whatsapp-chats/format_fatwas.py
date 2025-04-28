@@ -25,17 +25,24 @@ with open(input_file, 'r', encoding='utf-8') as infile, open(output_file, 'w', n
         question = ""
         answer = ""
 
-        # ❌ Skip if dashed line is inside *...*
-        if dashes_in_asterisks.search(message):
-            answer = message
+        split_match = qa_splitter.split(message, maxsplit=1)
+        if len(split_match) == 2:
+            question = split_match[0].strip()
+            answer = split_match[1].strip()
         else:
-            # ✅ Split into question and answer
-            split_match = qa_splitter.split(message, maxsplit=1)
-            if len(split_match) == 2:
-                question = split_match[0].strip()
-                answer = split_match[1].strip()
-            else:
-                answer = message
+            answer = message
+
+        # # ❌ Skip if dashed line is inside *...*
+        # if dashes_in_asterisks.search(message):
+        #     answer = message
+        # else:
+        #     # ✅ Split into question and answer
+        #     split_match = qa_splitter.split(message, maxsplit=1)
+        #     if len(split_match) == 2:
+        #         question = split_match[0].strip()
+        #         answer = split_match[1].strip()
+        #     else:
+        #         answer = message
 
         # ✅ Extract fatwa number
         fatwa_match = fatwa_number_pattern.search(message)
