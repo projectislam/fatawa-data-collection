@@ -11,3 +11,9 @@ Collect and format Fatawa data
 4. cd `cd 1-alikhlasonline.com`
 5. `python fetch_data.py`
 6. `git push`
+
+## Installation
+
+```shell
+pip install bs4
+```
