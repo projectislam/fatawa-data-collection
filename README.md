@@ -15,7 +15,7 @@ Collect and format Fatawa data
 ## Installation
 
 ```shell
-pip install requests bs4
+pip install requests bs4 undetected_chromedriver
 ```
 
 ## Note
@@ -24,4 +24,10 @@ if there is any SSL related error then install python from homebrew and after th
 
 ```
 /opt/homebrew/bin/python3 -m venv venv
+```
+
+for **undetected_chromedriver**
+
+```
+/opt/homebrew/opt/python@3.11/bin/python3.11 -m venv venv
 ```

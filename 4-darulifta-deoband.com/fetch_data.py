@@ -1,3 +1,4 @@
+import re
 import os
 import csv
 import time
@@ -19,7 +20,10 @@ options = Options()
 options.page_load_strategy = 'eager' 
 options.add_argument("--disable-gpu")
 options.add_argument("--no-sandbox")
-driver = uc.Chrome(options=options)
+driver = uc.Chrome(
+    version_main=145,
+    options=options
+)
 
 def save_to_csv(filename, data_rows):
     with open(filename, mode='w', newline='', encoding='utf-8') as csv_file:
@@ -48,6 +52,8 @@ def get_topic_list():
         for subitem in subitems:
             link = subitem.get("href")
             text = subitem.get_text().strip()
+            text = text = re.sub(r'\s*\(\d+\)$', '', text)
+            text = text.strip()
 
             data.append({
                 "category_lvl_1": category_lvl_1,
@@ -132,6 +138,11 @@ for topic_number, topic in enumerate(topics, 1):
     category_lvl_2 = topic["category_lvl_2_text"]
     topic_link = topic["category_lvl_2_link"]
 
+    start_topic = 1
+
+    if topic_number < start_topic:
+        continue
+
     print("Fetching topic....", topic_link)
 
     total_pages = get_topic_total_pages(topic_link)
@@ -175,14 +186,14 @@ for topic_number, topic in enumerate(topics, 1):
             except Exception as e:
                 print("Error scraping question:", e)
 
-            break
+            # break
 
         filename = f"{data_dir}/{topic_number}-{page_number}.csv"
         save_to_csv(filename, data_rows)
 
-        break
+        # break
     
-    break
+    # break
 
 
 print("END")
