@@ -104,8 +104,10 @@ def get_question_detail(question):
         "html_container": str(html_container)
     }
 
+# Patches 1-325, 325-650, 650-1050, 1050-1331
+
 total_pages = 1331
-start_page = 1
+start_page = 1144
 
 for page_number in range(start_page, total_pages + 1):
     page_link = f"{base_url}/new-questions/page/{page_number}"
@@ -121,9 +123,6 @@ for page_number in range(start_page, total_pages + 1):
 
     for question_number, question in enumerate(questions, 1):
         print(page_number, f"{question_number}/{total_questions}", question["link"])
-
-        if question_number == 5:
-            break
 
         content = get_question_detail(question)
 
@@ -144,7 +143,6 @@ for page_number in range(start_page, total_pages + 1):
 
     filename = f"{data_dir}/{page_number}.csv"
     save_to_csv(filename, data_rows)
-    break
 
 
 print("END")

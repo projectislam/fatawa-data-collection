@@ -15,5 +15,13 @@ Collect and format Fatawa data
 ## Installation
 
 ```shell
-pip install bs4
+pip install requests bs4
+```
+
+## Note
+
+if there is any SSL related error then install python from homebrew and after that create venv using homebrew python
+
+```
+/opt/homebrew/bin/python3 -m venv venv
 ```
