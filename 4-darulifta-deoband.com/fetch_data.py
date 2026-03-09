@@ -138,7 +138,11 @@ for topic_number, topic in enumerate(topics, 1):
     category_lvl_2 = topic["category_lvl_2_text"]
     topic_link = topic["category_lvl_2_link"]
 
-    start_topic = 1
+    start_topic = 9
+    end_topic = 9
+
+    if topic_number > end_topic:
+        break
 
     if topic_number < start_topic:
         continue
@@ -147,10 +151,15 @@ for topic_number, topic in enumerate(topics, 1):
 
     total_pages = get_topic_total_pages(topic_link)
     start_page = 1
+    end_page = 50
 
     print(total_pages, "total pages found for topic", topic_link)
 
     for page_number in range(start_page, total_pages + 1):
+
+        if page_number == end_page:
+            break
+
         page_link = f"{topic_link}?page={page_number}"
 
         info = f"Topic({topic_number}/{total_topics}) Page({page_number}/{total_pages})"
