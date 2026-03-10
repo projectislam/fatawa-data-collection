@@ -5,8 +5,8 @@ import re
 folder = "data"
 
 # Set your range
-start_from = 15
-end_to = 36
+start_from = 16
+end_to = 37
 
 # Get all files in folder
 files = os.listdir(folder)
