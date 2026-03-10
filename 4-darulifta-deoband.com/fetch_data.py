@@ -129,6 +129,11 @@ def get_question_detail(question):
     }
 
 topics = get_topic_list()
+
+topics.insert(11, {"category_lvl_1": None, "category_lvl_2_text": None, "category_lvl_2_link": None})
+topics.insert(15, {"category_lvl_1": None, "category_lvl_2_text": None, "category_lvl_2_link": None})
+topics.insert(33, {"category_lvl_1": None, "category_lvl_2_text": None, "category_lvl_2_link": None})
+
 total_topics = len(topics)
 
 print(total_topics, "total topics found")
@@ -138,8 +143,14 @@ for topic_number, topic in enumerate(topics, 1):
     category_lvl_2 = topic["category_lvl_2_text"]
     topic_link = topic["category_lvl_2_link"]
 
-    start_topic = 9
-    end_topic = 9
+    start_topic = 14
+    end_topic = 14
+
+    print("Topic number:", topic_number)
+
+    if not topic_link:
+        print("Bypass...")
+        continue
 
     if topic_number > end_topic:
         break
@@ -150,8 +161,8 @@ for topic_number, topic in enumerate(topics, 1):
     print("Fetching topic....", topic_link)
 
     total_pages = get_topic_total_pages(topic_link)
-    start_page = 1
-    end_page = 50
+    start_page = 3
+    end_page = 100
 
     print(total_pages, "total pages found for topic", topic_link)
 
