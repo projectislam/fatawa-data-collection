@@ -21,7 +21,7 @@ options.page_load_strategy = 'eager'
 options.add_argument("--disable-gpu")
 options.add_argument("--no-sandbox")
 driver = uc.Chrome(
-    version_main=145,
+    version_main=147,
     options=options
 )
 
@@ -143,8 +143,8 @@ for topic_number, topic in enumerate(topics, 1):
     category_lvl_2 = topic["category_lvl_2_text"]
     topic_link = topic["category_lvl_2_link"]
 
-    start_topic = 17
-    end_topic = 17
+    start_topic = 19
+    end_topic = 19
 
     print("Topic number:", topic_number)
 
@@ -161,14 +161,14 @@ for topic_number, topic in enumerate(topics, 1):
     print("Fetching topic....", topic_link)
 
     total_pages = get_topic_total_pages(topic_link)
-    start_page = 64
-    end_page = 114
+    start_page = 74
+    end_page = 141
 
     print(total_pages, "total pages found for topic", topic_link)
 
     for page_number in range(start_page, total_pages + 1):
 
-        if page_number == end_page:
+        if page_number == end_page + 1:
             break
 
         page_link = f"{topic_link}?page={page_number}"
