@@ -143,8 +143,8 @@ for topic_number, topic in enumerate(topics, 1):
     category_lvl_2 = topic["category_lvl_2_text"]
     topic_link = topic["category_lvl_2_link"]
 
-    start_topic = 28
-    end_topic = 28
+    start_topic = 29
+    end_topic = 29
 
     print("Topic number:", topic_number)
 
