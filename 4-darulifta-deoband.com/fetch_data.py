@@ -143,8 +143,8 @@ for topic_number, topic in enumerate(topics, 1):
     category_lvl_2 = topic["category_lvl_2_text"]
     topic_link = topic["category_lvl_2_link"]
 
-    start_topic = 30
-    end_topic = 30
+    start_topic = 33
+    end_topic = 33
 
     print("Topic number:", topic_number)
 
@@ -161,8 +161,8 @@ for topic_number, topic in enumerate(topics, 1):
     print("Fetching topic....", topic_link)
 
     total_pages = get_topic_total_pages(topic_link)
-    start_page = 1
-    end_page = 23
+    start_page = 15
+    end_page = 15
 
     print(total_pages, "total pages found for topic", topic_link)
 
