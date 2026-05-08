@@ -80,7 +80,7 @@ def get_question_detail(question):
     category_lvl_2 = category_parts[1]
     category_lvl_3 = category_parts[2]
 
-    question_ele = soup.select_one("body > div > div.container-fluid.contain > div > div.col-md-8 > p:nth-child(5)")
+    question_ele = soup.select_one("body > div > div.container-fluid.contain > div > div.col-md-8 > p:nth-child(6)")
     question_html = str(question_ele)
 
     answer_ele = soup.select_one("body > div > div.container-fluid.contain > div > div.col-md-8 h5.amiri")
