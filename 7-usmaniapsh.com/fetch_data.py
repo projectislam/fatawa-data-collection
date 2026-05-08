@@ -105,8 +105,8 @@ def get_question_detail(question):
     }
 
 
-total_pages = 148
-start_page = 1 # start from 0
+total_pages = 216
+start_page = 0 # start from 0
 
 for page in range(start_page, total_pages + 1):
     page_number = get_page_number(page)
