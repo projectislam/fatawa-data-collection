@@ -50,9 +50,9 @@ def get_question_detail(question):
     soup = BeautifulSoup(response.text, "html.parser")
 
     html_ele = soup.select_one("div.col-md-8.minHeight > div:nth-child(1)")
-    question_ele = soup.select_one("#printthis > div:nth-child(2)")
-    answer_ele = soup.select_one("#printthis > div:nth-child(3)")
-    date_ele = soup.select_one("div.text-left.hidden-print > table tr td:nth-child(4)")
+    question_ele = soup.select_one("#printthis > div:nth-child(3)")
+    answer_ele = soup.select_one("#printthis > div:nth-child(4)")
+    date_ele = soup.select_one("div.text-left.hidden-print > div > div:nth-child(4) > div")
 
     question_html = str(question_ele)
     question_html = question_html.replace('<b class="text-danger">سوال: </b>', "")
@@ -77,8 +77,8 @@ def get_question_detail(question):
     }
 
 
-total_pages = 224
-start_page = 149
+total_pages = 249
+start_page = 216
 
 for page_number in range(start_page, total_pages + 1):
     page_link = f"{base_url}/allquestions.aspx?lang=1&page={page_number}"

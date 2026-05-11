@@ -80,7 +80,7 @@ def get_question_detail(question):
     category_lvl_2 = category_parts[1]
     category_lvl_3 = category_parts[2]
 
-    question_ele = soup.select_one("body > div > div.container-fluid.contain > div > div.col-md-8 > p:nth-child(5)")
+    question_ele = soup.select_one("body > div > div.container-fluid.contain > div > div.col-md-8 > p:nth-child(6)")
     question_html = str(question_ele)
 
     answer_ele = soup.select_one("body > div > div.container-fluid.contain > div > div.col-md-8 h5.amiri")
@@ -112,10 +112,10 @@ data_dir = "./data"
 
 os.makedirs(data_dir, exist_ok=True)
 
-total_fatawa = 13950
+total_fatawa = 18600
 fatawa_per_page = 150
 total_pages = int(total_fatawa / 150)
-start_page = 93 # start from 0
+start_page = 0 # start from 0
 
 for page_number in range(start_page, total_pages + 1):
     print("Page number", page_number)

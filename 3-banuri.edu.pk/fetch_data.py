@@ -104,8 +104,10 @@ def get_question_detail(question):
         "html_container": str(html_container)
     }
 
-total_pages = 1248
-start_page = 1067
+# Patches 1-325, 325-650, 650-1050, 1050-1331
+
+total_pages = 1331
+start_page = 1144
 
 for page_number in range(start_page, total_pages + 1):
     page_link = f"{base_url}/new-questions/page/{page_number}"
