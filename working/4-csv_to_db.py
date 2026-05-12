@@ -39,11 +39,11 @@ def process_csv(file_path, conn):
         fatwa_number = row["fatwa_number"]
         link = row["link"]
         title = clean_html(row["title"])
-        question = clear_style(row["question"])
-        answer = clear_style(row["answer"])
+        question = clear_style(row["question_html"])
+        answer = clear_style(row["answer_html"])
         fatwa_issued_at = standardize_date(row["issued_at"])
-        category_level_1 = row["category_level_1"]
-        category_level_2 = row["category_level_2"]
+        category_level_1 = row["category_lvl_1"]
+        category_level_2 = row["category_lvl_2"]
         category_level_3 = ""
         dar_ul_ifta = "دارالعلوم دیوبند انڈیا"
         dar_ul_ifta_id = 4
@@ -70,6 +70,8 @@ def process_csv(file_path, conn):
             # cursor.execute("INSERT INTO fatawa_fts (rowid, title) VALUES (?, ?)", (row_id, title))
 
             conn.commit()
+        else:
+            print("Record with same title and dar_ul_ifta_id already exists.")
 
 # Main script
 def main():
@@ -87,8 +89,8 @@ def main():
             count = count + 1
 
             if count == 10:
-                # pass
-                exit(1)
+                pass
+                # exit(1)
 
     conn.close()
     print("Data import complete!")
